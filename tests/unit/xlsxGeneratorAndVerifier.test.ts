@@ -91,7 +91,9 @@ describe('XLSX Generation & Round-Trip Verification', () => {
     reconciledAt: new Date().toISOString(),
     overallStatus: 'EXACT_MATCH',
     isVerified: true,
-    toleranceApplied: 0.02,
+    toleranceApplied: 0.0,
+    currency: 'USD',
+    currencyPrecision: 2,
     lineItems: [],
     totals: {
       calculatedSubtotal: 1750.0,

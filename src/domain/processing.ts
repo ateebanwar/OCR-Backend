@@ -72,12 +72,21 @@ export interface TotalsReconciliation {
   isVerified: boolean;
 }
 
+export interface CalculationConventions {
+  subtotalConvention: 'GROSS' | 'NET' | 'TAX_INCLUSIVE' | 'DERIVED' | 'UNKNOWN';
+  taxConvention: 'PER_LINE' | 'SUBTOTAL_LEVEL' | 'BREAKDOWN_SUM' | 'ZERO_TAX' | 'UNKNOWN';
+  sourceRoundingApplied: number;
+}
+
 export interface FinancialReconciliationReport {
   documentId: string;
   reconciledAt: string;
   overallStatus: ReconciliationStatus;
   isVerified: boolean;
-  toleranceApplied: number;
+  toleranceApplied: number; // Strictly 0.0 (Zero arbitrary tolerance policy)
+  currency: string;
+  currencyPrecision: number;
+  conventions?: CalculationConventions;
   lineItems: LineItemReconciliation[];
   totals: TotalsReconciliation;
   discrepancies: string[];
