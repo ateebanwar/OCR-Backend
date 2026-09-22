@@ -19,8 +19,10 @@ export abstract class AppError extends Error {
 
 export class ConfigurationError extends AppError {
   public readonly statusCode = 500;
-  public readonly code = 'CONFIGURATION_ERROR';
+  public readonly code = 'SERVER_CONFIGURATION_ERROR';
 }
+
+export class ServerConfigurationError extends ConfigurationError {}
 
 export class FileValidationError extends AppError {
   public readonly statusCode = 400;

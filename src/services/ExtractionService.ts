@@ -11,7 +11,7 @@ import { reconcileFinancialDocument } from '../reconciliation/reconciliationEngi
 import { FinancialReconciliationReport, DocumentComplexityLevel } from '../domain/processing';
 import { selectModelForComplexity, getEscalationModel } from '../config/models';
 import { AppConfig } from '../config/env';
-import { AppError, ExtractionError } from '../errors/AppError';
+import { AppError, ConfigurationError, ExtractionError } from '../errors/AppError';
 
 export interface ExtractionResult {
   data: RawFinancialExtraction;
@@ -35,8 +35,12 @@ export class ExtractionService {
     filename: string,
     initialComplexity: DocumentComplexityLevel = 'LEVEL_1_SIMPLE'
   ): Promise<ExtractionResult> {
-    const modelsUsed: string[] = [];
     let currentModel = selectModelForComplexity(initialComplexity);
+    if (!currentModel || !currentModel.trim()) {
+      throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: GEMINI_EXTRACTION_MODEL is missing or invalid.');
+    }
+
+    const modelsUsed: string[] = [];
     modelsUsed.push(currentModel);
 
     let retriesAttempted = 0;
@@ -63,6 +67,9 @@ export class ExtractionService {
       );
       rawExtraction = assertValidStructure(aiResponse);
     } catch (err: unknown) {
+      if (err instanceof AppError && (err.code === 'SERVER_CONFIGURATION_ERROR' || err.statusCode === 500)) {
+        throw err;
+      }
       if (this.config.maxExtractionRetries === 0) {
         if (err instanceof AppError) {
           throw err;

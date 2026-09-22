@@ -8,8 +8,8 @@ import {
   ProviderOptions,
 } from './AIProvider';
 import { ChatMessage, ChatOptions, ChatResponse, ChatStreamChunk } from '../../domain/chat';
-import { ProviderError, ProviderTimeoutError } from '../../errors/AppError';
-import { AppConfig } from '../../config/env';
+import { ConfigurationError, ProviderError, ProviderTimeoutError } from '../../errors/AppError';
+import { AppConfig, DEFAULT_AI_MODEL } from '../../config/env';
 
 export class GeminiProvider implements AIProvider {
   public readonly providerName = 'gemini';
@@ -21,6 +21,16 @@ export class GeminiProvider implements AIProvider {
     if (config.gemini.apiKey) {
       this.genAI = new GoogleGenerativeAI(config.gemini.apiKey);
     }
+  }
+
+  private resolveModelName(candidate?: string, fallbackConfigured?: string): string {
+    if (candidate && typeof candidate === 'string' && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+    if (fallbackConfigured && typeof fallbackConfigured === 'string' && fallbackConfigured.trim().length > 0) {
+      return fallbackConfigured.trim();
+    }
+    return DEFAULT_AI_MODEL;
   }
 
   private getClient(): GoogleGenerativeAI {
@@ -65,7 +75,10 @@ export class GeminiProvider implements AIProvider {
     options?: ProviderOptions
   ): Promise<DocumentAnalysisResult> {
     const client = this.getClient();
-    const modelName = options?.model || this.config.gemini.extractionModel;
+    const modelName = this.resolveModelName(options?.model, this.config.gemini.extractionModel);
+    if (!modelName) {
+      throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: AI extraction model is missing or invalid.');
+    }
     const timeoutMs = options?.timeoutMs || this.config.requestTimeoutMs;
 
     const model = client.getGenerativeModel({ model: modelName });
@@ -115,7 +128,10 @@ export class GeminiProvider implements AIProvider {
     options?: ProviderOptions
   ): Promise<T> {
     const client = this.getClient();
-    const modelName = options?.model || this.config.gemini.extractionModel;
+    const modelName = this.resolveModelName(options?.model, this.config.gemini.extractionModel);
+    if (!modelName) {
+      throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: AI extraction model is missing or invalid.');
+    }
     const timeoutMs = options?.timeoutMs || this.config.requestTimeoutMs;
 
     const model = client.getGenerativeModel({
@@ -161,7 +177,7 @@ export class GeminiProvider implements AIProvider {
     options?: ChatOptions
   ): Promise<ChatResponse> {
     const client = this.getClient();
-    const modelName = options?.model || this.config.gemini.chatModel;
+    const modelName = this.resolveModelName(options?.model, this.config.gemini.chatModel);
     const timeoutMs = this.config.requestTimeoutMs;
 
     const model = client.getGenerativeModel({
@@ -207,7 +223,7 @@ export class GeminiProvider implements AIProvider {
     options?: ChatOptions
   ): AsyncIterable<ChatStreamChunk> {
     const client = this.getClient();
-    const modelName = options?.model || this.config.gemini.chatModel;
+    const modelName = this.resolveModelName(options?.model, this.config.gemini.chatModel);
 
     const model = client.getGenerativeModel({
       model: modelName,
@@ -250,7 +266,8 @@ export class GeminiProvider implements AIProvider {
 
       // Fast check with minimal tokens
       const client = this.getClient();
-      const model = client.getGenerativeModel({ model: this.config.gemini.chatModel });
+      const modelName = this.resolveModelName(undefined, this.config.gemini.chatModel);
+      const model = client.getGenerativeModel({ model: modelName });
       await model.generateContent({
         contents: [{ role: 'user', parts: [{ text: 'ping' }] }],
         generationConfig: { maxOutputTokens: 2 },

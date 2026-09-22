@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { ConfigurationError } from '../errors/AppError';
 
+export const DEFAULT_AI_MODEL = 'gemini-3.6-flash';
+
+const safeModelSchema = (defaultModel: string = DEFAULT_AI_MODEL) =>
+  z.preprocess((val) => {
+    if (typeof val === 'string' && val.trim().length > 0) {
+      return val.trim();
+    }
+    return defaultModel;
+  }, z.string().min(1).default(defaultModel));
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().positive().default(3001),
@@ -10,9 +20,9 @@ const envSchema = z.object({
   AI_PROVIDER: z.string().default('gemini'),
   
   GEMINI_API_KEY: z.string().optional().default(''),
-  GEMINI_EXTRACTION_MODEL: z.string().default('gemini-flash-latest'),
-  GEMINI_COMPLEX_EXTRACTION_MODEL: z.string().default('gemini-flash-latest'),
-  GEMINI_CHAT_MODEL: z.string().default('gemini-flash-latest'),
+  GEMINI_EXTRACTION_MODEL: safeModelSchema(DEFAULT_AI_MODEL),
+  GEMINI_COMPLEX_EXTRACTION_MODEL: safeModelSchema(DEFAULT_AI_MODEL),
+  GEMINI_CHAT_MODEL: safeModelSchema(DEFAULT_AI_MODEL),
   
   ALLOWED_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000'),
   
@@ -105,6 +115,11 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     maxEscalationLevels: raw.MAX_ESCALATION_LEVELS,
     isProduction: raw.NODE_ENV === 'production',
   };
+
+  // Startup validation: Ensure model name is non-empty
+  if (!config.gemini.extractionModel || !config.gemini.extractionModel.trim()) {
+    throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: GEMINI_EXTRACTION_MODEL is missing or invalid.');
+  }
 
   cachedConfig = config;
   return config;

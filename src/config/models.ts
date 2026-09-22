@@ -1,4 +1,4 @@
-import { getConfig } from './env';
+import { getConfig, DEFAULT_AI_MODEL } from './env';
 import { DocumentComplexityLevel } from '../domain/processing';
 
 export interface ModelHierarchy {
@@ -9,10 +9,14 @@ export interface ModelHierarchy {
 
 export function getModelHierarchy(): ModelHierarchy {
   const config = getConfig();
+  const primary = (config.gemini.extractionModel && config.gemini.extractionModel.trim()) || DEFAULT_AI_MODEL;
+  const complex = (config.gemini.complexExtractionModel && config.gemini.complexExtractionModel.trim()) || primary;
+  const escalation = (config.gemini.complexExtractionModel && config.gemini.complexExtractionModel.trim()) || primary;
+
   return {
-    primary: config.gemini.extractionModel,
-    complex: config.gemini.complexExtractionModel,
-    escalation: config.gemini.complexExtractionModel,
+    primary,
+    complex,
+    escalation,
   };
 }
 
