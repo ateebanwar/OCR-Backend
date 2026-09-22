@@ -1,0 +1,51 @@
+{
+  "name": "financial-document-intelligence-backend",
+  "version": "1.0.0",
+  "description": "Production-grade, provider-agnostic financial document intelligence system",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "start": "node dist/src/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "financial",
+    "document-intelligence",
+    "ocr",
+    "gemini",
+    "fastify",
+    "typescript",
+    "xlsx",
+    "reconciliation"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/helmet": "^13.1.1",
+    "@fastify/multipart": "^9.0.2",
+    "@fastify/rate-limit": "^11.2.0",
+    "@fastify/sensible": "^6.0.1",
+    "@google/generative-ai": "^0.24.1",
+    "exceljs": "^4.4.0",
+    "fastify": "^5.2.1",
+    "zod": "^3.24.2"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
