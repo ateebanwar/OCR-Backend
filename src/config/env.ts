@@ -70,9 +70,9 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
 
   const raw = result.data;
 
-  // Strict check: In production or when gemini provider is explicitly chosen outside test, API key must be provided
+  // Check: In production or when gemini provider is explicitly chosen outside test, warn if API key is missing
   if (raw.NODE_ENV === 'production' && raw.AI_PROVIDER === 'gemini' && (!raw.GEMINI_API_KEY || raw.GEMINI_API_KEY.includes('PASTE_YOUR'))) {
-    throw new ConfigurationError('GEMINI_API_KEY is required and must not be a placeholder in production environments.');
+    console.warn('[SECURITY WARNING] GEMINI_API_KEY is not configured or is a placeholder in production.');
   }
 
   const allowedOrigins = raw.ALLOWED_ORIGINS

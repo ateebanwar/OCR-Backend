@@ -22,6 +22,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const aiProvider = options.aiProvider || getAIProvider(config);
 
   const app = Fastify({
+    trustProxy: true,
     logger: {
       level: config.logLevel,
       redact: {
@@ -63,6 +64,18 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(rateLimit, {
     max: config.rateLimitMax,
     timeWindow: config.rateLimitWindowMs,
+    keyGenerator: (request: FastifyRequest) => {
+      const forwarded = request.headers['x-forwarded-for'];
+      const realIp = request.headers['x-real-ip'];
+      if (typeof forwarded === 'string') {
+        const client = forwarded.split(',')[0]?.trim();
+        if (client) return client;
+      }
+      if (typeof realIp === 'string' && realIp.trim()) {
+        return realIp.trim();
+      }
+      return request.ip || '127.0.0.1';
+    },
   });
 
   // Utility & Multipart Plugins
