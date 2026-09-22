@@ -10,9 +10,9 @@ const envSchema = z.object({
   AI_PROVIDER: z.string().default('gemini'),
   
   GEMINI_API_KEY: z.string().optional().default(''),
-  GEMINI_EXTRACTION_MODEL: z.string().default('gemini-2.5-flash'),
-  GEMINI_COMPLEX_EXTRACTION_MODEL: z.string().default('gemini-2.5-pro'),
-  GEMINI_CHAT_MODEL: z.string().default('gemini-2.5-flash'),
+  GEMINI_EXTRACTION_MODEL: z.string().default('gemini-flash-latest'),
+  GEMINI_COMPLEX_EXTRACTION_MODEL: z.string().default('gemini-flash-latest'),
+  GEMINI_CHAT_MODEL: z.string().default('gemini-flash-latest'),
   
   ALLOWED_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000'),
   
