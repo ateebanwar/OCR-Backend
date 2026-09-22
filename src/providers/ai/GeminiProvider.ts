@@ -98,10 +98,7 @@ export class GeminiProvider implements AIProvider {
     }
     const timeoutMs = options?.timeoutMs || this.config.requestTimeoutMs;
 
-    const candidateModels = [primaryModel];
-    if (primaryModel !== 'gemini-flash-lite-latest') {
-      candidateModels.push('gemini-flash-lite-latest');
-    }
+    const candidateModels = this.buildCandidateFallbackChain(primaryModel);
 
     const pdfPart: Part = {
       inlineData: {
@@ -181,10 +178,7 @@ export class GeminiProvider implements AIProvider {
     }
     const timeoutMs = options?.timeoutMs || this.config.requestTimeoutMs;
 
-    const candidateModels = [primaryModel];
-    if (primaryModel !== 'gemini-flash-lite-latest') {
-      candidateModels.push('gemini-flash-lite-latest');
-    }
+    const candidateModels = this.buildCandidateFallbackChain(primaryModel);
 
     const pdfPart: Part = {
       inlineData: {
@@ -374,4 +368,20 @@ export class GeminiProvider implements AIProvider {
     }
     return text.trim();
   }
+
+  public buildCandidateFallbackChain(primaryModel: string): string[] {
+    const resilienceFallbackPool = [
+      'gemini-3.6-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-flash-lite-latest',
+    ];
+    const chain: string[] = [primaryModel];
+    for (const candidate of resilienceFallbackPool) {
+      if (!chain.includes(candidate)) {
+        chain.push(candidate);
+      }
+    }
+    return chain;
+  }
 }
+

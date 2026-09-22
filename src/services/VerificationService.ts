@@ -2,6 +2,7 @@ import { AIProvider } from '../providers/ai/AIProvider';
 import { RawFinancialExtraction } from '../extraction/schemas/financialSchema';
 import { getSecondPassVerificationPrompt } from '../extraction/promptTemplates';
 import { AppConfig } from '../config/env';
+import { getVerificationModel } from '../config/models';
 
 export interface SecondPassVerificationResult {
   isVerified: boolean;
@@ -26,6 +27,7 @@ export class VerificationService {
     extractedData: RawFinancialExtraction
   ): Promise<SecondPassVerificationResult> {
     const prompt = getSecondPassVerificationPrompt(extractedData);
+    const verificationModel = (this.config.gemini?.verificationModel && this.config.gemini.verificationModel.trim()) || getVerificationModel();
 
     try {
       const result = await this.aiProvider.extractStructuredData<{
@@ -45,7 +47,7 @@ export class VerificationService {
           userPrompt: prompt,
         },
         {
-          model: this.config.gemini.complexExtractionModel,
+          model: verificationModel,
           temperature: 0.0,
         }
       );

@@ -1,0 +1,74 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1048 >>
+stream
+BT
+/F1 11 Tf
+50 750 Td (APEX INDUSTRIAL DYNAMICS - 1 PAGE COMPLEX INVOICE) Tj
+-50 -750 Td
+50 730 Td (Invoice: INV-00808 Date: 2026-03-08 Currency: USD) Tj
+-50 -730 Td
+50 710 Td (Description | Qty | Unit Price | Disc | Tax Rate | Total) Tj
+-50 -710 Td
+50 690 Td (Hydraulic Actuator H-1 | 2 | 450.00 | 50.00 | 8.5% | 850.00) Tj
+-50 -690 Td
+50 670 Td (Pneumatic Valve Assembly | 4 | 125.00 | 0.00 | 8.5% | 500.00) Tj
+-50 -670 Td
+50 650 Td (High Pressure Sensor | 10 | 65.00 | 50.00 | 8.5% | 600.00) Tj
+-50 -650 Td
+50 630 Td (Subtotal: 1950.00) Tj
+-50 -630 Td
+50 610 Td (State Sales Tax \(8.5%\): 165.75) Tj
+-50 -610 Td
+50 590 Td (Grand Total: 2115.75) Tj
+-50 -590 Td
+ET
+50 750 510 22 re S
+50 725 510 22 re S
+50 700 510 22 re S
+50 675 510 22 re S
+50 650 510 22 re S
+50 625 510 22 re S
+50 600 510 22 re S
+50 575 510 22 re S
+50 550 510 22 re S
+50 525 510 22 re S
+50 500 510 22 re S
+50 475 510 22 re S
+50 450 510 22 re S
+50 425 510 22 re S
+50 400 510 22 re S
+50 375 510 22 re S
+50 350 510 22 re S
+50 325 510 22 re S
+50 300 510 22 re S
+50 275 510 22 re S
+
+
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1411
+%%EOF

@@ -1,0 +1,61 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 834 >>
+stream
+BT
+/F1 11 Tf
+50 750 Td (TECH CONSULTING & HARDWARE GROUP) Tj
+-50 -750 Td
+50 730 Td (Invoice: INV-00404 Date: 2026-03-04 Currency: USD) Tj
+-50 -730 Td
+50 710 Td (TABLE A: PROFESSIONAL SERVICES) Tj
+-50 -710 Td
+50 690 Td (Service Description | Hours | Rate | Total) Tj
+-50 -690 Td
+50 670 Td (System Architecture Design | 10 | 150.00 | 1500.00) Tj
+-50 -670 Td
+50 650 Td (Security Code Audit | 5 | 200.00 | 1000.00) Tj
+-50 -650 Td
+50 630 Td (TABLE B: SOFTWARE LICENSES) Tj
+-50 -630 Td
+50 610 Td (Product Name | Units | Unit Price | Total) Tj
+-50 -610 Td
+50 590 Td (Enterprise Database License | 2 | 500.00 | 1000.00) Tj
+-50 -590 Td
+50 570 Td (Cloud Monitoring Suite | 1 | 500.00 | 500.00) Tj
+-50 -570 Td
+50 550 Td (Subtotal: 4000.00) Tj
+-50 -550 Td
+50 530 Td (Tax: 400.00) Tj
+-50 -530 Td
+50 510 Td (Grand Total: 4400.00) Tj
+-50 -510 Td
+ET
+
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1196
+%%EOF

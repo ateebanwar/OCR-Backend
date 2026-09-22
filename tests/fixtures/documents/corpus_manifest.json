@@ -1,0 +1,269 @@
+{
+  "test01_simple_invoice.pdf": {
+    "testId": "TEST 01",
+    "description": "Simple 1-page standard invoice",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_1_SIMPLE",
+    "expectedTier": "TIER_1_SIMPLE",
+    "groundTruth": {
+      "vendor": "ACME SUPPLIES INC.",
+      "customer": "Global Corp",
+      "invoiceNumber": "INV-00101",
+      "currency": "USD",
+      "lineItemCount": 2,
+      "subtotal": 100,
+      "taxTotal": 10,
+      "grandTotal": 110
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test01_simple_invoice.pdf",
+    "fileSize": 1119,
+    "sha256": "484e9bbd8d32bfda29e617ff3ab0063c342a87cb7d85978dcb9f9771778e945a"
+  },
+  "test02_multipage_invoice.pdf": {
+    "testId": "TEST 02",
+    "description": "Multi-page continuation invoice with repeated headers",
+    "pageCount": 2,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "groundTruth": {
+      "vendor": "GLOBAL LOGISTICS CORP",
+      "invoiceNumber": "INV-00202",
+      "currency": "USD",
+      "lineItemCount": 5,
+      "subtotal": 700,
+      "taxTotal": 70,
+      "grandTotal": 770
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test02_multipage_invoice.pdf",
+    "fileSize": 1744,
+    "sha256": "b438600b231bc483c548848b77282eca8553315fb68e070a7f21c95ba06fbd50"
+  },
+  "test03_dense_financial_table.pdf": {
+    "testId": "TEST 03",
+    "description": "Dense financial table with 16 vector grid lines",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "groundTruth": {
+      "vendor": "PRECISION HARDWARE INC",
+      "invoiceNumber": "INV-00303",
+      "lineItemCount": 12,
+      "subtotal": 780,
+      "taxTotal": 78,
+      "grandTotal": 858
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test03_dense_financial_table.pdf",
+    "fileSize": 1971,
+    "sha256": "150e37d74d043d56083e66a5bf2a9888529b993ee1e261eb149f4f746f97cad0"
+  },
+  "test04_multi_table.pdf": {
+    "testId": "TEST 04",
+    "description": "Document with multiple independent tables",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "groundTruth": {
+      "vendor": "TECH CONSULTING & HARDWARE GROUP",
+      "invoiceNumber": "INV-00404",
+      "lineItemCount": 4,
+      "subtotal": 4000,
+      "taxTotal": 400,
+      "grandTotal": 4400
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test04_multi_table.pdf",
+    "fileSize": 1379,
+    "sha256": "ffde16a14ff0e9eeaf4c30e1e437e263a3c93ef50e037faacdeb83988e3b97db"
+  },
+  "test05_complex_tax.pdf": {
+    "testId": "TEST 05",
+    "description": "Complex multi-tax invoice with discounts and shipping",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "groundTruth": {
+      "vendor": "COMMERCIAL ENTERPRISES LLC",
+      "invoiceNumber": "INV-00505",
+      "lineItemCount": 2,
+      "subtotal": 900,
+      "discountTotal": 100,
+      "taxTotal": 63,
+      "shippingTotal": 50,
+      "grandTotal": 1013
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test05_complex_tax.pdf",
+    "fileSize": 1327,
+    "sha256": "999e5f3967645bdaf543053e9c36b9349624d98812564689e71dad9f5d4d4935"
+  },
+  "test06_financial_statement.pdf": {
+    "testId": "TEST 06",
+    "description": "Financial ledger statement with debit/credit balance continuation",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_3_AMBIGUOUS",
+    "expectedTier": "TIER_3_ESCALATION",
+    "groundTruth": {
+      "vendor": "METROPOLITAN COMMODITY BANK",
+      "invoiceNumber": "ACC-882910",
+      "lineItemCount": 3
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test06_financial_statement.pdf",
+    "fileSize": 1187,
+    "sha256": "c5b96471d917834a73daa8bb539288154f6196505cf2b7945002ac7f070d1233"
+  },
+  "test07_high_complexity.pdf": {
+    "testId": "TEST 07",
+    "description": "High complexity 3-page consolidated statement with 25 vector grid lines per page",
+    "pageCount": 3,
+    "expectedComplexity": "LEVEL_3_AMBIGUOUS",
+    "expectedTier": "TIER_3_ESCALATION",
+    "groundTruth": {
+      "vendor": "INTERNATIONAL INFRASTRUCTURE HOLDINGS GMBH",
+      "invoiceNumber": "CON-77001",
+      "lineItemCount": 5,
+      "subtotal": 23000,
+      "taxTotal": 4370,
+      "grandTotal": 27370
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test07_high_complexity.pdf",
+    "fileSize": 2063,
+    "sha256": "4de74f601d6d77305d3ab4a1c41902b9d3f575d5d8334fd78dce88cdc8648e61"
+  },
+  "test08_onepage_complex.pdf": {
+    "testId": "TEST 08",
+    "description": "1-page document with 20 vector grid rectangles and tax columns proving page count alone is not complexity",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "groundTruth": {
+      "vendor": "APEX INDUSTRIAL DYNAMICS",
+      "invoiceNumber": "INV-00808",
+      "lineItemCount": 3,
+      "subtotal": 1950,
+      "taxTotal": 165.75,
+      "grandTotal": 2115.75
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test08_onepage_complex.pdf",
+    "fileSize": 1594,
+    "sha256": "cd4a3068e18128f2cffed39541b113b5a5913c4864f1444eee8a70e59fc32674"
+  },
+  "test09_multipage_simple.pdf": {
+    "testId": "TEST 09",
+    "description": "3-page sparse document with no tables, proving high page count does not blindly trigger Tier 3",
+    "pageCount": 3,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test09_multipage_simple.pdf",
+    "fileSize": 1458,
+    "sha256": "1f29aac5d5629bff97b87fcf2e9c1db1463d0c4471e2918ea9a4f39aec160a6e"
+  },
+  "test10_scanned_image.pdf": {
+    "testId": "TEST 10",
+    "description": "PDF containing image xobject streams representing scanned document",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_2_COMPLEX",
+    "expectedTier": "TIER_2_COMPLEX",
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test10_scanned_image.pdf",
+    "fileSize": 1010,
+    "sha256": "650c1a1ee718dbeac7a3ef9f272fb91039afafdfa37153a5cfb7029987805a6d"
+  },
+  "test11_multicurrency.pdf": {
+    "testId": "TEST 11",
+    "description": "Multi-currency invoice denominated in EUR with 21% VAT",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_1_SIMPLE",
+    "expectedTier": "TIER_1_SIMPLE",
+    "groundTruth": {
+      "vendor": "EUROPEAN TECH EXPORTS BV",
+      "invoiceNumber": "INV-EUR-011",
+      "currency": "EUR",
+      "lineItemCount": 2,
+      "subtotal": 1000,
+      "taxTotal": 210,
+      "grandTotal": 1210
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test11_multicurrency.pdf",
+    "fileSize": 1087,
+    "sha256": "407773ffef1ca58be5239f687e216069f478b7a89dc3ade48fae9275253a693f"
+  },
+  "test12_source_rounding.pdf": {
+    "testId": "TEST 12",
+    "description": "Document with 33.3333 unit price testing exact mathematical rounding reproduction",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_1_SIMPLE",
+    "expectedTier": "TIER_1_SIMPLE",
+    "groundTruth": {
+      "vendor": "PRECISION FRACTIONAL METRICS",
+      "invoiceNumber": "INV-ROUND-012",
+      "lineItemCount": 1,
+      "subtotal": 100,
+      "taxTotal": 8.25,
+      "grandTotal": 108.25
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test12_source_rounding.pdf",
+    "fileSize": 972,
+    "sha256": "586da1ecdbb26b1c15abeafb5707c1a0f18cc57a82bef907f7bea2c039f19027"
+  },
+  "test13_ambiguous_value.pdf": {
+    "testId": "TEST 13",
+    "description": "Document with an intentionally smudged/unreadable item value to test safety/no hallucination",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_3_AMBIGUOUS",
+    "expectedTier": "TIER_3_ESCALATION",
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test13_ambiguous_value.pdf",
+    "fileSize": 818,
+    "sha256": "09a083dc4bdf8feb39c7c0d2ebc16ef3f3f4bbf8f6b938bbf30aa7fd0c765cde"
+  },
+  "test14_prompt_injection.pdf": {
+    "testId": "TEST 14",
+    "description": "Adversarial document attempting prompt injection and system override (CWE-1021)",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_1_SIMPLE",
+    "expectedTier": "TIER_1_SIMPLE",
+    "groundTruth": {
+      "vendor": "SECURITY AUDIT SERVICES",
+      "invoiceNumber": "INV-SEC-014",
+      "subtotal": 1000,
+      "taxTotal": 100,
+      "grandTotal": 1100
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test14_prompt_injection.pdf",
+    "fileSize": 1060,
+    "sha256": "73344661ad4e46a3f9ba1e30960db39645c8fe100c5b155352fed0c07df4e3eb"
+  },
+  "test15_malformed.pdf": {
+    "testId": "TEST 15",
+    "description": "Corrupted file without %PDF- magic bytes to test pre-AI rejection",
+    "pageCount": 0,
+    "expectedComplexity": "REJECTED_BEFORE_AI",
+    "expectedTier": "NONE",
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test15_malformed.pdf",
+    "fileSize": 50,
+    "sha256": "e18020777350a7f721fc067835c27df7888ccd2a0606eeffc17b83f62a02dca5"
+  },
+  "test16_encrypted.pdf": {
+    "testId": "TEST 16",
+    "description": "Encrypted PDF with /Encrypt dictionary to test pre-AI safety handling",
+    "pageCount": 1,
+    "expectedComplexity": "ENCRYPTED_PDF",
+    "expectedTier": "NONE",
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test16_encrypted.pdf",
+    "fileSize": 844,
+    "sha256": "24271ca29c1dc45920e5766a63a566f22237e6abe527c4ef295cedeb18b600be"
+  },
+  "test17_formula_injection.pdf": {
+    "testId": "TEST 17",
+    "description": "Document with Excel formula injection triggers to verify sanitization in XLSX output",
+    "pageCount": 1,
+    "expectedComplexity": "LEVEL_1_SIMPLE",
+    "expectedTier": "TIER_1_SIMPLE",
+    "groundTruth": {
+      "vendor": "SPREADSHEET EXPLOIT AUDIT",
+      "invoiceNumber": "INV-CSV-017",
+      "subtotal": 200,
+      "taxTotal": 20,
+      "grandTotal": 220
+    },
+    "filePath": "D:\\OCR-Backend\\tests\\fixtures\\documents\\test17_formula_injection.pdf",
+    "fileSize": 1065,
+    "sha256": "951b9fc2730af30dcd0dde3549562289ff954a5789d187b43e41542fc3d78e2c"
+  }
+}

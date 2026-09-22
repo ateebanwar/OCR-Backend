@@ -167,12 +167,32 @@ export function reconcileFinancialDocument(
   let calculatedTaxDec = calculatedLineTaxesDec;
   let taxVariance = 0;
 
-  // Breakdown check
+  const baseSubtotal =
+    extractedSubtotal !== null && extractedSubtotal !== undefined
+      ? Decimal.from(extractedSubtotal).roundTo(precision)
+      : calculatedSubtotalDec;
+
+  const discountTotalDec = Decimal.from(data.totals.discountTotal).roundTo(precision);
+  const discountDec = subtotalConvention === 'NET' ? Decimal.from(0) : discountTotalDec;
+  const shippingDec = Decimal.from(data.totals.shippingCharges).roundTo(precision);
+  const additionalDec = Decimal.from(data.totals.additionalCharges).roundTo(precision);
+  const sourceRoundingDec = Decimal.from(data.totals.rounding).roundTo(precision);
+  const extractedGrandTotalDec = Decimal.from(data.totals.grandTotal).roundTo(precision);
+
+  // Breakdown check and Subtotal tax rate check
   let breakdownTaxSum: Decimal | null = null;
+  let subtotalRateTaxDec: Decimal | null = null;
   if (data.totals.taxesBreakdown && data.totals.taxesBreakdown.length > 0) {
     let sum = Decimal.from(0);
     for (const tb of data.totals.taxesBreakdown) {
       sum = sum.add(Decimal.from(tb.amount).roundTo(precision));
+      if (tb.rate !== null && tb.rate !== undefined && tb.rate > 0 && subtotalRateTaxDec === null) {
+        const rateDec = tb.rate > 1 ? Decimal.from(tb.rate).divide(100) : Decimal.from(tb.rate);
+        const expected = baseSubtotal.multiply(rateDec).roundTo(precision);
+        if (extractedTax !== null && Decimal.from(extractedTax).roundTo(precision).equalsAtPrecision(expected, precision)) {
+          subtotalRateTaxDec = expected;
+        }
+      }
     }
     breakdownTaxSum = sum.roundTo(precision);
   }
@@ -190,11 +210,25 @@ export function reconcileFinancialDocument(
       calculatedTaxDec = breakdownTaxSum;
       taxVariance = 0;
       auditNotes.push('Tax verified against explicit tax breakdown schedule sum.');
+    } else if (subtotalRateTaxDec !== null && extTaxDec.equalsAtPrecision(subtotalRateTaxDec, precision)) {
+      taxConvention = 'SUBTOTAL_LEVEL';
+      calculatedTaxDec = subtotalRateTaxDec;
+      taxVariance = 0;
+      auditNotes.push('Tax verified against invoice-level subtotal tax rate convention.');
     } else if (extTaxDec.isZero() && calculatedLineTaxesDec.isZero()) {
       taxConvention = 'ZERO_TAX';
       calculatedTaxDec = Decimal.from(0);
       taxVariance = 0;
       auditNotes.push('Zero-tax / tax-exempt document verified.');
+    } else if (
+      breakdownTaxSum === null &&
+      calculatedLineTaxesDec.isZero() &&
+      extractedGrandTotalDec.subtract(baseSubtotal).add(discountDec).subtract(shippingDec).subtract(additionalDec).subtract(sourceRoundingDec).roundTo(precision).equalsAtPrecision(extTaxDec, precision)
+    ) {
+      taxConvention = 'SUBTOTAL_LEVEL';
+      calculatedTaxDec = extTaxDec;
+      taxVariance = 0;
+      auditNotes.push('Tax verified against invoice-level summary tax convention (unitemized line taxes, grand total balances exactly).');
     } else {
       taxConvention = 'UNKNOWN';
       calculatedTaxDec = breakdownTaxSum ?? calculatedLineTaxesDec;
@@ -210,23 +244,10 @@ export function reconcileFinancialDocument(
   }
 
   // --- Step 4: Reconcile Grand Total ---
-  const baseSubtotal =
-    extractedSubtotal !== null && extractedSubtotal !== undefined
-      ? Decimal.from(extractedSubtotal).roundTo(precision)
-      : calculatedSubtotalDec;
-
-  // If subtotal was already Net, invoice-level discountTotal must not be deducted twice if it represents line discounts
-  const discountTotalDec = Decimal.from(data.totals.discountTotal).roundTo(precision);
-  const discountDec = subtotalConvention === 'NET' ? Decimal.from(0) : discountTotalDec;
-
   const taxDec =
     extractedTax !== null && extractedTax !== undefined
       ? Decimal.from(extractedTax).roundTo(precision)
       : calculatedTaxDec;
-
-  const shippingDec = Decimal.from(data.totals.shippingCharges).roundTo(precision);
-  const additionalDec = Decimal.from(data.totals.additionalCharges).roundTo(precision);
-  const sourceRoundingDec = Decimal.from(data.totals.rounding).roundTo(precision);
 
   if (!sourceRoundingDec.isZero()) {
     auditNotes.push(`Source document includes explicit rounding adjustment of ${sourceRoundingDec.toFixed(precision)}`);
@@ -266,7 +287,6 @@ export function reconcileFinancialDocument(
     .add(sourceRoundingDec)
     .roundTo(precision);
 
-  const extractedGrandTotalDec = Decimal.from(data.totals.grandTotal).roundTo(precision);
   let calculatedGrandTotalDec = calcGrandTotalStandard;
   let grandTotalVariance = 0;
 

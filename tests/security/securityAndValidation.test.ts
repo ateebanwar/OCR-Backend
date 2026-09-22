@@ -83,14 +83,14 @@ describe('Security and Validation Safeguards', () => {
   });
 
   it('scrubs API keys and secrets from strings and nested objects', () => {
-    const rawApiKey = 'AIzaSyDummySecretKey1234567890ABCDEFGH';
+    const rawApiKey = 'key-dummytestsecretkey1234567890abcdefgh';
     const scrubbed = scrubString(`Error accessing service with key ${rawApiKey}`);
     expect(scrubbed).not.toContain(rawApiKey);
     expect(scrubbed).toContain('[REDACTED_SECRET]');
 
     const sensitiveObj = {
       user: 'alice',
-      geminiApiKey: 'AIzaSySecret1234567890123456789012345',
+      geminiApiKey: 'test-gemini-api-key-placeholder-only',
       password: 'SuperSecretPassword',
       fileBuffer: Buffer.from('hello world'),
     };

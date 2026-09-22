@@ -36,3 +36,6 @@ Thumbs.db
 
 # Vercel
 .vercel/
+
+# Scratch & local verification scripts
+scratch/

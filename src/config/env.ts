@@ -1,7 +1,12 @@
 import { z } from 'zod';
 import { ConfigurationError } from '../errors/AppError';
 
-export const DEFAULT_AI_MODEL = 'gemini-3.6-flash';
+export const DEFAULT_TIER1_MODEL = 'gemini-3.6-flash';
+export const DEFAULT_TIER2_MODEL = 'gemini-3.7-flash';
+export const DEFAULT_TIER3_MODEL = 'gemini-3.8-flash';
+export const DEFAULT_VERIFICATION_MODEL = 'gemini-3.7-flash';
+export const DEFAULT_CHAT_MODEL = 'gemini-3.6-flash';
+export const DEFAULT_AI_MODEL = DEFAULT_TIER1_MODEL;
 
 const safeModelSchema = (defaultModel: string = DEFAULT_AI_MODEL) =>
   z.preprocess((val) => {
@@ -20,9 +25,11 @@ const envSchema = z.object({
   AI_PROVIDER: z.string().default('gemini'),
   
   GEMINI_API_KEY: z.string().optional().default(''),
-  GEMINI_EXTRACTION_MODEL: safeModelSchema(DEFAULT_AI_MODEL),
-  GEMINI_COMPLEX_EXTRACTION_MODEL: safeModelSchema(DEFAULT_AI_MODEL),
-  GEMINI_CHAT_MODEL: safeModelSchema(DEFAULT_AI_MODEL),
+  GEMINI_EXTRACTION_MODEL: safeModelSchema(DEFAULT_TIER1_MODEL),
+  GEMINI_COMPLEX_EXTRACTION_MODEL: safeModelSchema(DEFAULT_TIER2_MODEL),
+  GEMINI_ESCALATION_MODEL: safeModelSchema(DEFAULT_TIER3_MODEL),
+  GEMINI_VERIFICATION_MODEL: safeModelSchema(DEFAULT_VERIFICATION_MODEL),
+  GEMINI_CHAT_MODEL: safeModelSchema(DEFAULT_CHAT_MODEL),
   
   ALLOWED_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000'),
   
@@ -52,6 +59,8 @@ export interface AppConfig {
     apiKey: string;
     extractionModel: string;
     complexExtractionModel: string;
+    escalationModel: string;
+    verificationModel: string;
     chatModel: string;
   };
   allowedOrigins: string[];
@@ -100,6 +109,8 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
       apiKey: raw.GEMINI_API_KEY,
       extractionModel: raw.GEMINI_EXTRACTION_MODEL,
       complexExtractionModel: raw.GEMINI_COMPLEX_EXTRACTION_MODEL,
+      escalationModel: raw.GEMINI_ESCALATION_MODEL,
+      verificationModel: raw.GEMINI_VERIFICATION_MODEL,
       chatModel: raw.GEMINI_CHAT_MODEL,
     },
     allowedOrigins,
@@ -116,9 +127,18 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     isProduction: raw.NODE_ENV === 'production',
   };
 
-  // Startup validation: Ensure model name is non-empty
+  // Startup validation: Ensure model names are non-empty
   if (!config.gemini.extractionModel || !config.gemini.extractionModel.trim()) {
     throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: GEMINI_EXTRACTION_MODEL is missing or invalid.');
+  }
+  if (!config.gemini.complexExtractionModel || !config.gemini.complexExtractionModel.trim()) {
+    throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: GEMINI_COMPLEX_EXTRACTION_MODEL is missing or invalid.');
+  }
+  if (!config.gemini.escalationModel || !config.gemini.escalationModel.trim()) {
+    throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: GEMINI_ESCALATION_MODEL is missing or invalid.');
+  }
+  if (!config.gemini.verificationModel || !config.gemini.verificationModel.trim()) {
+    throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: GEMINI_VERIFICATION_MODEL is missing or invalid.');
   }
 
   cachedConfig = config;

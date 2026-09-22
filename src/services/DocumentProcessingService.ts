@@ -173,11 +173,28 @@ export class DocumentProcessingService {
 
     recordStage('COMPLETED', stageStart);
 
+    const verificationModel =
+      (this.config.gemini?.verificationModel && this.config.gemini.verificationModel.trim()) ||
+      'gemini-3.7-flash';
+
+    const fallbackCandidate = extractionResult.modelsUsed.find(
+      (m) => m === 'gemini-flash-lite-latest' || m === 'gemini-3.5-flash-lite'
+    );
+
     const auditTrail: ProcessingAuditTrail = {
       stages: stageDurations,
       totalProcessingTimeMs: Date.now() - overallStartTime,
+      complexityLevel: complexity.level,
+      complexityScore: complexity.score,
+      complexitySignals: complexity.signals as unknown as Record<string, unknown>,
+      selectedModelTier: complexity.selectedTier,
+      selectedModel: complexity.recommendedModel,
+      verificationModel,
+      fallbackUsed: Boolean(fallbackCandidate),
+      fallbackModel: fallbackCandidate,
       retryCount: extractionResult.retriesAttempted,
       escalationCount: extractionResult.escalationLevel,
+      correctionCount: extractionResult.correctionCount,
       modelsUsed: extractionResult.modelsUsed,
     };
 

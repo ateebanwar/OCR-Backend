@@ -13,7 +13,9 @@ describe('Model Configuration & Safety Audit', () => {
     });
 
     expect(config.gemini.extractionModel).toBe(DEFAULT_AI_MODEL);
-    expect(config.gemini.complexExtractionModel).toBe(DEFAULT_AI_MODEL);
+    expect(config.gemini.complexExtractionModel).toBe('gemini-3.7-flash');
+    expect(config.gemini.escalationModel).toBe('gemini-3.8-flash');
+    expect(config.gemini.verificationModel).toBe('gemini-3.7-flash');
     expect(config.gemini.chatModel).toBe(DEFAULT_AI_MODEL);
   });
 
@@ -24,11 +26,15 @@ describe('Model Configuration & Safety Audit', () => {
       GEMINI_API_KEY: 'test-key',
       GEMINI_EXTRACTION_MODEL: '   ',
       GEMINI_COMPLEX_EXTRACTION_MODEL: '',
+      GEMINI_ESCALATION_MODEL: '  ',
+      GEMINI_VERIFICATION_MODEL: ' ',
       GEMINI_CHAT_MODEL: '  ',
     });
 
     expect(config.gemini.extractionModel).toBe(DEFAULT_AI_MODEL);
-    expect(config.gemini.complexExtractionModel).toBe(DEFAULT_AI_MODEL);
+    expect(config.gemini.complexExtractionModel).toBe('gemini-3.7-flash');
+    expect(config.gemini.escalationModel).toBe('gemini-3.8-flash');
+    expect(config.gemini.verificationModel).toBe('gemini-3.7-flash');
     expect(config.gemini.chatModel).toBe(DEFAULT_AI_MODEL);
   });
 
@@ -38,9 +44,17 @@ describe('Model Configuration & Safety Audit', () => {
       AI_PROVIDER: 'gemini',
       GEMINI_API_KEY: 'test-key',
       GEMINI_EXTRACTION_MODEL: 'gemini-2.5-flash',
+      GEMINI_COMPLEX_EXTRACTION_MODEL: 'gemini-custom-complex',
+      GEMINI_ESCALATION_MODEL: 'gemini-custom-escalation',
+      GEMINI_VERIFICATION_MODEL: 'gemini-custom-verif',
+      GEMINI_CHAT_MODEL: 'gemini-custom-chat',
     });
 
     expect(config.gemini.extractionModel).toBe('gemini-2.5-flash');
+    expect(config.gemini.complexExtractionModel).toBe('gemini-custom-complex');
+    expect(config.gemini.escalationModel).toBe('gemini-custom-escalation');
+    expect(config.gemini.verificationModel).toBe('gemini-custom-verif');
+    expect(config.gemini.chatModel).toBe('gemini-custom-chat');
   });
 
   it('getModelHierarchy returns valid non-empty model names for primary, complex, and escalation', () => {
@@ -53,14 +67,17 @@ describe('Model Configuration & Safety Audit', () => {
 
     const hierarchy = getModelHierarchy();
     expect(hierarchy.primary).toBe(DEFAULT_AI_MODEL);
-    expect(hierarchy.complex).toBe(DEFAULT_AI_MODEL);
-    expect(hierarchy.escalation).toBe(DEFAULT_AI_MODEL);
+    expect(hierarchy.complex).toBe('gemini-3.7-flash');
+    expect(hierarchy.escalation).toBe('gemini-3.8-flash');
+    expect(hierarchy.tier1Simple).toBe(DEFAULT_AI_MODEL);
+    expect(hierarchy.tier2Complex).toBe('gemini-3.7-flash');
+    expect(hierarchy.tier3Escalation).toBe('gemini-3.8-flash');
 
     expect(selectModelForComplexity('LEVEL_1_SIMPLE')).toBe(DEFAULT_AI_MODEL);
-    expect(selectModelForComplexity('LEVEL_2_COMPLEX')).toBe(DEFAULT_AI_MODEL);
-    expect(selectModelForComplexity('LEVEL_3_AMBIGUOUS')).toBe(DEFAULT_AI_MODEL);
-    expect(getEscalationModel(1)).toBe(DEFAULT_AI_MODEL);
-    expect(getEscalationModel(2)).toBe(DEFAULT_AI_MODEL);
+    expect(selectModelForComplexity('LEVEL_2_COMPLEX')).toBe('gemini-3.7-flash');
+    expect(selectModelForComplexity('LEVEL_3_AMBIGUOUS')).toBe('gemini-3.8-flash');
+    expect(getEscalationModel(1)).toBe('gemini-3.7-flash');
+    expect(getEscalationModel(2)).toBe('gemini-3.8-flash');
   });
 
   it('GeminiProvider resolves valid model name even if options.model is empty or undefined', () => {

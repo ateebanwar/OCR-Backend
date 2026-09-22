@@ -22,9 +22,31 @@ export type ProcessingStage =
 
 export type DocumentComplexityLevel = 'LEVEL_1_SIMPLE' | 'LEVEL_2_COMPLEX' | 'LEVEL_3_AMBIGUOUS';
 
+export interface ComplexitySignals {
+  pageCount: number;
+  byteSize: number;
+  imageCount: number;
+  streamCount: number;
+  textStreamCount: number;
+  gridVectorCount: number;
+  hasTableHeaders: boolean;
+  tableHeaderMatches: string[];
+  financialTokensCount: number;
+  hasMultiCurrency: boolean;
+  hasStatementMarkers: boolean;
+  hasMultipleTotals: boolean;
+  isScannedHeavy: boolean;
+  multiPageTableRisk: boolean;
+  uncertaintyScore: number;
+  confidence: number;
+}
+
 export interface ComplexityAnalysisResult {
   level: DocumentComplexityLevel;
+  score: number;
+  signals: ComplexitySignals;
   reasons: string[];
+  selectedTier: 'TIER_1_SIMPLE' | 'TIER_2_COMPLEX' | 'TIER_3_ESCALATION';
   recommendedModel: string;
   estimatedPageCount: number;
 }
@@ -54,19 +76,15 @@ export interface TotalsReconciliation {
   calculatedSubtotal: number;
   extractedSubtotal: number | null;
   subtotalVariance: number;
-
   calculatedTaxTotal: number;
   extractedTaxTotal: number | null;
   taxVariance: number;
-
   calculatedGrandTotal: number;
   extractedGrandTotal: number;
   grandTotalVariance: number;
-
   calculatedBalanceDue: number | null;
   extractedBalanceDue: number | null;
   balanceDueVariance: number | null;
-
   status: ReconciliationStatus;
   discrepancies: string[];
   isVerified: boolean;
@@ -102,7 +120,16 @@ export interface StageDuration {
 export interface ProcessingAuditTrail {
   stages: StageDuration[];
   totalProcessingTimeMs: number;
+  complexityLevel?: DocumentComplexityLevel;
+  complexityScore?: number;
+  complexitySignals?: Record<string, unknown>;
+  selectedModelTier?: string;
+  selectedModel?: string;
+  verificationModel?: string;
+  fallbackUsed?: boolean;
+  fallbackModel?: string;
   retryCount: number;
   escalationCount: number;
+  correctionCount?: number;
   modelsUsed: string[];
 }

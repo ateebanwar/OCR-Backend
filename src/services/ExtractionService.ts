@@ -18,6 +18,7 @@ export interface ExtractionResult {
   reconciliation: FinancialReconciliationReport;
   retriesAttempted: number;
   escalationLevel: number;
+  correctionCount: number;
   modelsUsed: string[];
 }
 
@@ -45,6 +46,7 @@ export class ExtractionService {
 
     let retriesAttempted = 0;
     let escalationLevel = initialComplexity === 'LEVEL_1_SIMPLE' ? 0 : 1;
+    let correctionCount = 0;
 
     const docInput = {
       buffer: pdfBuffer,
@@ -106,8 +108,9 @@ export class ExtractionService {
     // AI Correction Loop: if reconciliation or semantic validation failed, retry with feedback
     while (
       (!reconciliationReport.isVerified || !semanticResult.isValid) &&
-      retriesAttempted < this.config.maxExtractionRetries
+      correctionCount < this.config.maxExtractionRetries
     ) {
+      correctionCount++;
       retriesAttempted++;
       if (escalationLevel < this.config.maxEscalationLevels) {
         escalationLevel++;
@@ -153,6 +156,7 @@ export class ExtractionService {
       reconciliation: reconciliationReport,
       retriesAttempted,
       escalationLevel,
+      correctionCount,
       modelsUsed,
     };
   }

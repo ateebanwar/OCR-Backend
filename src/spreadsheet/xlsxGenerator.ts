@@ -78,7 +78,7 @@ export async function generateFinancialWorkbook(
     summarySheet.getCell('A3').value = 'Document ID:';
     summarySheet.getCell('B3').value = sanitizeSpreadsheetText(document.documentId);
     summarySheet.getCell('C3').value = 'Document Type:';
-    summarySheet.getCell('D3').value = sanitizeSpreadsheetText(document.documentType.toUpperCase());
+    summarySheet.getCell('D3').value = sanitizeSpreadsheetText((document.documentType || 'INVOICE').toUpperCase());
 
     summarySheet.getCell('A4').value = 'Invoice Number:';
     summarySheet.getCell('B4').value = sanitizeSpreadsheetText(document.invoiceNumber);
@@ -327,31 +327,31 @@ export async function generateFinancialWorkbook(
         },
         {
           item: 'Subtotal Verification',
-          ext: (reconciliation.totals.extractedSubtotal ?? 0).toFixed(precision),
-          calc: reconciliation.totals.calculatedSubtotal.toFixed(precision),
-          var: reconciliation.totals.subtotalVariance.toFixed(precision),
-          status: reconciliation.totals.subtotalVariance === 0 ? 'PASSED' : 'DISCREPANCY',
+          ext: ((reconciliation.totals?.extractedSubtotal ?? 0)).toFixed(precision),
+          calc: (reconciliation.totals?.calculatedSubtotal ?? 0).toFixed(precision),
+          var: (reconciliation.totals?.subtotalVariance ?? 0).toFixed(precision),
+          status: (reconciliation.totals?.subtotalVariance ?? 0) === 0 ? 'PASSED' : 'DISCREPANCY',
         },
         {
           item: 'Tax Total Verification',
-          ext: (reconciliation.totals.extractedTaxTotal ?? 0).toFixed(precision),
-          calc: reconciliation.totals.calculatedTaxTotal.toFixed(precision),
-          var: reconciliation.totals.taxVariance.toFixed(precision),
-          status: reconciliation.totals.taxVariance === 0 ? 'PASSED' : 'DISCREPANCY',
+          ext: ((reconciliation.totals?.extractedTaxTotal ?? 0)).toFixed(precision),
+          calc: (reconciliation.totals?.calculatedTaxTotal ?? 0).toFixed(precision),
+          var: (reconciliation.totals?.taxVariance ?? 0).toFixed(precision),
+          status: (reconciliation.totals?.taxVariance ?? 0) === 0 ? 'PASSED' : 'DISCREPANCY',
         },
         {
           item: 'Grand Total Reconciliation',
-          ext: reconciliation.totals.extractedGrandTotal.toFixed(precision),
-          calc: reconciliation.totals.calculatedGrandTotal.toFixed(precision),
-          var: reconciliation.totals.grandTotalVariance.toFixed(precision),
-          status: reconciliation.totals.grandTotalVariance === 0 ? 'PASSED' : 'DISCREPANCY',
+          ext: (reconciliation.totals?.extractedGrandTotal ?? 0).toFixed(precision),
+          calc: (reconciliation.totals?.calculatedGrandTotal ?? 0).toFixed(precision),
+          var: (reconciliation.totals?.grandTotalVariance ?? 0).toFixed(precision),
+          status: (reconciliation.totals?.grandTotalVariance ?? 0) === 0 ? 'PASSED' : 'DISCREPANCY',
         },
         {
           item: 'Page Coverage Completeness',
-          ext: `${(document.coverage.extractionCompleteness * 100).toFixed(1)}%`,
-          calc: `${document.coverage.processedPages}/${document.coverage.totalPages} pages`,
+          ext: `${((document.coverage?.extractionCompleteness ?? 1) * 100).toFixed(1)}%`,
+          calc: `${document.coverage?.processedPages ?? 1}/${document.coverage?.totalPages ?? 1} pages`,
           var: (0).toFixed(precision),
-          status: document.coverage.isFullyCovered ? 'FULL COVERAGE' : 'PARTIAL COVERAGE',
+          status: (document.coverage?.isFullyCovered ?? true) ? 'FULL COVERAGE' : 'PARTIAL COVERAGE',
         },
       ];
 

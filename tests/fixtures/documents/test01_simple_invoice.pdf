@@ -1,0 +1,57 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 575 >>
+stream
+BT
+/F1 11 Tf
+50 750 Td (ACME SUPPLIES INC.) Tj
+-50 -750 Td
+50 730 Td (Invoice Number: INV-00101) Tj
+-50 -730 Td
+50 710 Td (Invoice Date: 2026-03-01) Tj
+-50 -710 Td
+50 690 Td (Currency: USD) Tj
+-50 -690 Td
+50 670 Td (Bill To: Global Corp) Tj
+-50 -670 Td
+50 650 Td (Description | Qty | Unit Price | Total) Tj
+-50 -650 Td
+50 630 Td (Office Paper | 2 | 25.00 | 50.00) Tj
+-50 -630 Td
+50 610 Td (Pen Pack | 5 | 10.00 | 50.00) Tj
+-50 -610 Td
+50 590 Td (Subtotal: 100.00) Tj
+-50 -590 Td
+50 570 Td (Tax \(10%\): 10.00) Tj
+-50 -570 Td
+50 550 Td (Grand Total: 110.00) Tj
+-50 -550 Td
+ET
+
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+937
+%%EOF

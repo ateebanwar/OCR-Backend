@@ -1,0 +1,49 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 428 >>
+stream
+BT
+/F1 11 Tf
+50 750 Td (PRECISION FRACTIONAL METRICS) Tj
+-50 -750 Td
+50 730 Td (Invoice: INV-ROUND-012 Date: 2026-03-12 Currency: USD) Tj
+-50 -730 Td
+50 710 Td (Description | Qty | Unit Price | Total) Tj
+-50 -710 Td
+50 690 Td (Cloud Compute Core A | 3 | 33.3333 | 100.00) Tj
+-50 -690 Td
+50 670 Td (Subtotal: 100.00) Tj
+-50 -670 Td
+50 650 Td (Tax \(8.25%\): 8.25) Tj
+-50 -650 Td
+50 630 Td (Grand Total: 108.25) Tj
+-50 -630 Td
+ET
+
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+790
+%%EOF
