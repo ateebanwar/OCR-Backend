@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 import { ConfigurationError } from '../errors/AppError';
 
 export const DEFAULT_TIER1_MODEL = 'gemini-3.6-flash';
@@ -31,7 +31,7 @@ const envSchema = z.object({
   GEMINI_VERIFICATION_MODEL: safeModelSchema(DEFAULT_VERIFICATION_MODEL),
   GEMINI_CHAT_MODEL: safeModelSchema(DEFAULT_CHAT_MODEL),
   
-  ALLOWED_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000'),
+  ALLOWED_ORIGINS: z.string().default('http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000'),
   
   MAX_UPLOAD_SIZE_MB: z.coerce.number().positive().default(15),
   MAX_PDF_PAGES: z.coerce.number().positive().max(500).default(50),
@@ -200,3 +200,4 @@ export function getConfig(): AppConfig {
   }
   return cachedConfig;
 }
+
