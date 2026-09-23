@@ -34,6 +34,7 @@ import { ReviewIssue, CorrectionRecord, ReviewState } from '../domain/review';
 
 export interface ProcessDocumentOptions {
   allowReviewRequired?: boolean;
+  throwOnReconciliationDiscrepancy?: boolean;
 }
 
 export interface DocumentProcessingResult {
@@ -168,11 +169,8 @@ export class DocumentProcessingService {
     );
     recordStage('VERIFYING_SECOND_PASS', stageStart);
 
-    const hasAmbiguousIssues = issues.some((i) => i.type === 'AMBIGUOUS_VALUE');
-
-    // Check for unresolvable financial discrepancies (Deterministic Reconciliation Authority)
-    // If math failed and there are NO ambiguous issues to review, fail immediately with DocumentProcessingError.
-    if (!finalReconciliation.isVerified && !hasAmbiguousIssues && !options?.allowReviewRequired) {
+    // Support optional explicit throwing on reconciliation discrepancies if caller requests
+    if (options?.throwOnReconciliationDiscrepancy && !finalReconciliation.isVerified) {
       recordStage('FAILED', stageStart);
       throw new DocumentProcessingError(
         `Financial reconciliation failed with unresolved discrepancies: ${finalReconciliation.discrepancies.join(

@@ -92,7 +92,7 @@ describe('Document Processing API Pipeline', () => {
     expect(downloadRes.rawPayload.length).toBeGreaterThan(1000);
   });
 
-  it('returns structured failure (422) when financial reconciliation fails and cannot be resolved', async () => {
+  it('returns 200 with REVIEW_REQUIRED and reviewToken when financial reconciliation has unresolved discrepancies on processable document', async () => {
     // Configure mock to return conflicting data
     const corruptedAi = new MockAIProvider();
     corruptedAi.mockExtractionData = {
@@ -121,11 +121,14 @@ describe('Document Processing API Pipeline', () => {
       payload: multipartBody,
     });
 
-    expect(res.statusCode).toBe(422);
+    expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
-    expect(body.success).toBe(false);
-    expect(body.error.code).toBe('DOCUMENT_PROCESSING_FAILED');
-    expect(body.error.message).toContain('reconciliation failed');
+    expect(body.success).toBe(true);
+    expect(body.data.isVerified).toBe(false);
+    expect(body.data.summary.status).toBe('REVIEW_REQUIRED');
+    expect(body.data.summary.review.required).toBe(true);
+    expect(body.data.summary.review.reviewToken).toBeDefined();
+    expect(body.data.reconciliation.isVerified).toBe(false);
 
     await localApp.close();
   });

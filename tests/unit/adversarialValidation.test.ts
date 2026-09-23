@@ -290,10 +290,15 @@ describe('Adversarial Production Validation Suite', () => {
       const service = new DocumentProcessingService(mockProvider, config);
 
       const fakePdf = Buffer.from('%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF');
-      // CRITICAL ASSERTION: The pipeline throws DocumentProcessingError because reconciliation failed!
-      await expect(service.processDocument(fakePdf, 'test_override.pdf')).rejects.toThrow(
-        /Financial reconciliation failed/i
-      );
+      // CRITICAL ASSERTION: AI claiming verified CANNOT override arithmetic discrepancy!
+      // Document is NOT verified, reconciliation is false, and status is REVIEW_REQUIRED!
+      const result = await service.processDocument(fakePdf, 'test_override.pdf');
+      expect(result.isVerified).toBe(false);
+      expect(result.reconciliation.isVerified).toBe(false);
+      expect(result.summary.verification.reconciliationVerified).toBe(false);
+      expect(result.summary.status).toBe('REVIEW_REQUIRED');
+      expect(result.summary.review?.required).toBe(true);
+      expect(result.summary.review?.reviewToken).toBeDefined();
     });
   });
 

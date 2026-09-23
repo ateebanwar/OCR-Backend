@@ -132,7 +132,7 @@ describe('Fallback, Retry, Escalation, and AI Correction Loop Execution Paths', 
     expect(result.reconciliation.isVerified).toBe(true);
   });
 
-  it('Scenario 7: Persistent financial mismatch exhausts retries, throws DocumentProcessingError, and stops XLSX generation', async () => {
+  it('Scenario 7: Persistent financial mismatch exhausts retries, marks as unverified REVIEW_REQUIRED with safe XLSX', async () => {
     // Return persistently mismatched data
     mockProvider.customExtractHandler = () => {
       const flawedData = JSON.parse(JSON.stringify(mockProvider.mockExtractionData));
@@ -142,8 +142,12 @@ describe('Fallback, Retry, Escalation, and AI Correction Loop Execution Paths', 
 
     const processingService = new DocumentProcessingService(mockProvider, config);
 
-    await expect(processingService.processDocument(samplePdf, 'bad-invoice.pdf')).rejects.toThrow(
-      DocumentProcessingError
-    );
+    const result = await processingService.processDocument(samplePdf, 'bad-invoice.pdf');
+    expect(result.isVerified).toBe(false);
+    expect(result.reconciliation.isVerified).toBe(false);
+    expect(result.summary.status).toBe('REVIEW_REQUIRED');
+    expect(result.summary.review?.required).toBe(true);
+    expect(result.summary.review?.reviewToken).toBeDefined();
+    expect(result.xlsxBase64).toBeDefined();
   });
 });

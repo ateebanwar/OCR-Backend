@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { CorrectionEngine } from '../../src/services/CorrectionEngine';
 import { DocumentStatusCalculator } from '../../src/services/DocumentStatusCalculator';
 import { ReviewResolutionService } from '../../src/services/ReviewResolutionService';
@@ -9,6 +11,8 @@ import { ReviewIssue, CorrectionRecord } from '../../src/domain/review';
 import { AIProvider } from '../../src/providers/ai/AIProvider';
 import { loadConfig } from '../../src/config/env';
 import { buildApp } from '../../src/app/buildApp';
+import { MockAIProvider } from '../mocks/MockAIProvider';
+import { FileValidationError, UnsupportedDocumentError } from '../../src/errors/AppError';
 
 describe('Correction & Review Workflow Engine', () => {
   // ============================================================================
@@ -798,4 +802,499 @@ describe('Correction & Review Workflow Engine', () => {
       await app.close();
     });
   });
+
+  // ============================================================================
+  // 5. END-TO-END PIPELINE STATUS SEMANTICS (A - F & REGRESSION AUDIT)
+  // ============================================================================
+  describe('End-to-End Pipeline Status Semantics & Regression', () => {
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      AI_PROVIDER: 'mock',
+      PORT: '3002',
+    });
+
+    const validSamplePdf = Buffer.from(
+      '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF'
+    );
+
+    it('A. Clean invoice -> produces VERIFIED status with verified reconciliation and no review required', async () => {
+      const mockAi = new MockAIProvider();
+      const processingService = new DocumentProcessingService(mockAi, config);
+
+      const result = await processingService.processDocument(validSamplePdf, 'clean-invoice.pdf');
+
+      expect(result.success).toBe(true);
+      expect(result.isVerified).toBe(true);
+      expect(result.reconciliation.isVerified).toBe(true);
+      expect(result.reconciliation.overallStatus).toBe('EXACT_MATCH');
+      expect(result.summary.status).toBe('VERIFIED');
+      expect(result.summary.review?.required).toBe(false);
+      expect(result.summary.review?.reviewToken).toBeUndefined();
+      expect(result.xlsxBase64).toBeDefined();
+      expect(result.xlsxVerification.isValid).toBe(true);
+    });
+
+    it('B. Auto-corrected promotional discount -> produces VERIFIED_WITH_CORRECTIONS status with 0 variance math', async () => {
+      const mockAi = new MockAIProvider();
+      mockAi.customExtractHandler = (_doc, _prompt, options) => {
+        if (options?.purpose === 'VERIFICATION') {
+          return {
+            isVerified: true,
+            confidenceScore: 1.0,
+            issuesFound: [],
+            correctionsNeeded: [],
+            verifierNotes: 'Verified',
+          };
+        }
+        return {
+          documentType: 'invoice',
+          invoiceNumber: 'INV-PROMO-99',
+          documentNumber: null,
+          invoiceDate: '2026-03-23',
+          dueDate: null,
+          purchaseOrderNumber: null,
+          referenceNumbers: [],
+          currency: 'USD',
+          language: 'en',
+          pageCount: 1,
+          vendor: { name: 'SaaS Platform Inc', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+          customer: { name: 'Acme Corp', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+          lineItems: [
+            {
+              lineNumber: 1,
+              description: 'Annual Enterprise Subscription',
+              sku: null,
+              quantity: 1,
+              unit: null,
+              unitPrice: 1000.0,
+              discount: null,
+              taxRate: null,
+              taxAmount: null,
+              lineSubtotal: 1000.0,
+              lineTotal: 1000.0,
+            },
+            {
+              lineNumber: 2,
+              description: 'Promotional Discount - Spring 2026 Special Offer',
+              sku: null,
+              quantity: 1,
+              unit: null,
+              unitPrice: -150.0,
+              discount: null,
+              taxRate: null,
+              taxAmount: null,
+              lineSubtotal: -150.0,
+              lineTotal: -150.0,
+            },
+          ],
+          totals: {
+            subtotal: 1000.0,
+            discountTotal: null,
+            taxTotal: 0,
+            taxesBreakdown: null,
+            shippingCharges: null,
+            additionalCharges: null,
+            rounding: null,
+            grandTotal: 850.0,
+            paidAmount: null,
+            balanceDue: 850.0,
+          },
+          payment: null,
+        };
+      };
+
+      const processingService = new DocumentProcessingService(mockAi, config);
+      const result = await processingService.processDocument(validSamplePdf, 'promo-invoice.pdf');
+
+      expect(result.success).toBe(true);
+      expect(result.isVerified).toBe(true);
+      expect(result.reconciliation.isVerified).toBe(true);
+      expect(result.summary.status).toBe('VERIFIED_WITH_CORRECTIONS');
+      expect(result.summary.corrections?.length).toBe(1);
+      expect(result.summary.corrections?.[0]?.source).toBe('AUTOMATIC_ENGINE');
+      expect(result.summary.review?.required).toBe(false);
+      expect(result.xlsxBase64).toBeDefined();
+    });
+
+    it('C. Ambiguous value -> produces REVIEW_REQUIRED + XLSX + reviewToken without throwing', async () => {
+      const mockAi = new MockAIProvider();
+      mockAi.customExtractHandler = () => {
+        return {
+          documentType: 'invoice',
+          invoiceNumber: 'INV-AMBIG-77',
+          documentNumber: null,
+          invoiceDate: '2026-03-23',
+          dueDate: null,
+          purchaseOrderNumber: null,
+          referenceNumbers: [],
+          currency: 'USD',
+          language: 'en',
+          pageCount: 1,
+          vendor: { name: 'Hardware Supplier', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+          customer: { name: 'Acme Corp', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+          lineItems: [
+            {
+              lineNumber: 1,
+              description: 'Database Server Rack',
+              sku: null,
+              quantity: 1,
+              unit: null,
+              unitPrice: 2000.0,
+              discount: null,
+              taxRate: null,
+              taxAmount: null,
+              lineSubtotal: 2000.0,
+              lineTotal: 2000.0,
+            },
+            {
+              lineNumber: 2,
+              description: 'Item SKU #98421-B',
+              sku: '98421-B',
+              quantity: 1,
+              unit: null,
+              unitPrice: -200.0, // Ambiguous negative value!
+              discount: null,
+              taxRate: null,
+              taxAmount: null,
+              lineSubtotal: -200.0,
+              lineTotal: -200.0,
+            },
+          ],
+          totals: {
+            subtotal: 2000.0,
+            discountTotal: null,
+            taxTotal: 0,
+            taxesBreakdown: null,
+            shippingCharges: null,
+            additionalCharges: null,
+            rounding: null,
+            grandTotal: 1800.0,
+            paidAmount: null,
+            balanceDue: 1800.0,
+          },
+          payment: null,
+        };
+      };
+
+      const processingService = new DocumentProcessingService(mockAi, config);
+      const result = await processingService.processDocument(validSamplePdf, 'ambiguous-invoice.pdf');
+
+      expect(result.success).toBe(true);
+      expect(result.isVerified).toBe(false);
+      expect(result.summary.status).toBe('REVIEW_REQUIRED');
+      expect(result.summary.review?.required).toBe(true);
+      expect(result.summary.review?.reviewToken).toBeDefined();
+      expect(result.summary.issues?.some((i) => i.type === 'AMBIGUOUS_VALUE')).toBe(true);
+      expect(result.xlsxBase64).toBeDefined();
+      expect(result.xlsxVerification.isValid).toBe(true);
+    });
+
+    it('D. Unresolved RECONCILIATION_WARNING -> produces REVIEW_REQUIRED + XLSX + reviewToken without throwing DocumentProcessingError', async () => {
+      const mockAi = new MockAIProvider();
+      mockAi.customExtractHandler = () => {
+        const flawedData = JSON.parse(JSON.stringify(mockAi.mockExtractionData));
+        // Extracted grandTotal (99999.0) arithmetically contradicts line items ($3300)
+        flawedData.totals.grandTotal = 99999.0;
+        return flawedData;
+      };
+
+      const processingService = new DocumentProcessingService(mockAi, config);
+
+      // Must NOT throw DocumentProcessingError!
+      const result = await processingService.processDocument(validSamplePdf, 'discrepant-invoice.pdf');
+
+      expect(result.success).toBe(true);
+      expect(result.isVerified).toBe(false);
+      expect(result.reconciliation.isVerified).toBe(false);
+      expect(result.summary.status).toBe('REVIEW_REQUIRED');
+      expect(result.summary.review?.required).toBe(true);
+      expect(result.summary.review?.reviewToken).toBeDefined();
+      expect(result.summary.issues?.some((i) => i.type === 'RECONCILIATION_WARNING')).toBe(true);
+      expect(result.xlsxBase64).toBeDefined();
+      expect(result.xlsxVerification.isValid).toBe(true);
+    });
+
+    it('E. Corrupt/unsafe PDF -> fails with FileValidationError / UnsupportedDocumentError and rejects processing', async () => {
+      const mockAi = new MockAIProvider();
+      const processingService = new DocumentProcessingService(mockAi, config);
+
+      const corruptBuffer = Buffer.from('NOT_A_VALID_PDF_HEADER_CORRUPT_BYTES');
+
+      await expect(
+        processingService.processDocument(corruptBuffer, 'corrupt.pdf')
+      ).rejects.toThrow(UnsupportedDocumentError);
+
+      // DocumentStatusCalculator returns REJECTED when isRejected flag is explicitly set
+      const status = DocumentStatusCalculator.calculateStatus({
+        isVerified: false,
+        reconciliationVerified: false,
+        issues: [],
+        corrections: [],
+        isRejected: true,
+      });
+      expect(status).toBe('REJECTED');
+    });
+
+    it('F. KEEP_AS_IS must not bypass deterministic reconciliation', async () => {
+      const reviewService = new ReviewResolutionService();
+      const mockDoc: CanonicalFinancialDocument = {
+        documentId: 'doc-recon-bypass-test',
+        sourceFilename: 'unbalanced.pdf',
+        documentHash: 'hash-bypass-123',
+        documentType: 'invoice',
+        invoiceNumber: 'INV-BYPASS-01',
+        documentNumber: null,
+        invoiceDate: '2026-03-23',
+        dueDate: null,
+        purchaseOrderNumber: null,
+        referenceNumbers: [],
+        currency: 'USD',
+        language: 'en',
+        processingTimestamp: new Date().toISOString(),
+        vendor: { name: 'Vendor Inc', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+        customer: { name: 'Customer Corp', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+        lineItems: [
+          {
+            lineNumber: 1,
+            description: 'Item A',
+            sku: null,
+            quantity: 1,
+            unit: null,
+            unitPrice: 100.0,
+            discount: null,
+            taxRate: null,
+            taxAmount: null,
+            lineSubtotal: 100.0,
+            lineTotal: 100.0,
+          },
+        ],
+        totals: {
+          subtotal: 100.0,
+          discountTotal: null,
+          taxTotal: 0,
+          taxesBreakdown: null,
+          shippingCharges: null,
+          additionalCharges: null,
+          rounding: null,
+          grandTotal: 500.0, // Arithmetically contradictory (100 != 500)
+          paidAmount: null,
+          balanceDue: 500.0,
+        },
+        payment: null,
+        coverage: {
+          totalPages: 1,
+          processedPages: 1,
+          extractedPages: [1],
+          failedPages: [],
+          skippedPages: [],
+          extractionCompleteness: 1,
+          isFullyCovered: true,
+        },
+      };
+
+      const token = reviewService.createReviewToken({
+        documentId: mockDoc.documentId,
+        documentHash: mockDoc.documentHash,
+        sourceFilename: mockDoc.sourceFilename,
+        canonicalDoc: mockDoc,
+        issues: [
+          {
+            id: 'issue-discrepancy-1',
+            type: 'RECONCILIATION_WARNING',
+            severity: 'ERROR',
+            status: 'OPEN',
+            page: 1,
+            field: 'totals',
+            originalValue: 500.0,
+            aiInterpretation: { field: 'totals', value: 500.0 },
+            message: 'Grand total discrepancy',
+            reason: 'Arithmetic variance',
+            evidence: [],
+            resolutionOptions: ['KEEP_AS_IS', 'OTHER'],
+            resolved: false,
+          },
+        ],
+        corrections: [],
+        auditTrail: {} as any,
+      });
+
+      const resolutionResult = await reviewService.resolveReview({
+        reviewToken: token,
+        resolutions: [
+          {
+            issueId: 'issue-discrepancy-1',
+            userDecision: 'KEEP_AS_IS',
+          },
+        ],
+      });
+
+      // Verification MUST remain false and status must remain REVIEW_REQUIRED
+      expect(resolutionResult.reconciliation.isVerified).toBe(false);
+      expect(resolutionResult.reconciliation.overallStatus).toBe('DISCREPANCY');
+      expect(resolutionResult.reconciliation.toleranceApplied).toBe(0);
+      expect(resolutionResult.summary.status).toBe('REVIEW_REQUIRED');
+      expect(resolutionResult.isVerified).toBe(false);
+    });
+
+    it('11. Regression Test: Downloadable-PDF-Invoices-Add-On-Samples.pdf produces REVIEW_REQUIRED with auto-corrected promo and balance due discrepancy', async () => {
+      const fixturePath = path.resolve('tests/fixtures/documents/Downloadable-PDF-Invoices-Add-On-Samples.pdf');
+      expect(fs.existsSync(fixturePath)).toBe(true);
+      const pdfBuffer = fs.readFileSync(fixturePath);
+
+      const mockAi = new MockAIProvider();
+      // Configure extraction simulating exact behavior of the sample document:
+      // Promotional discount -$12.50 extracted on line 2, subtotal/grandTotal $37.50, paidAmount $37.50, extracted balanceDue $37.50
+      mockAi.customExtractHandler = () => {
+        return {
+          documentType: 'invoice',
+          invoiceNumber: 'INV-ADDON-001',
+          documentNumber: null,
+          invoiceDate: '2026-03-23',
+          dueDate: null,
+          purchaseOrderNumber: null,
+          referenceNumbers: [],
+          currency: 'USD',
+          language: 'en',
+          pageCount: 1,
+          vendor: { name: 'Add-On Services LLC', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+          customer: { name: 'Client Account', address: null, taxId: null, email: null, phone: null, contactPerson: null },
+          lineItems: [
+            {
+              lineNumber: 1,
+              description: 'WordPress Hosting - Premium Add-On',
+              sku: 'HOST-WP-01',
+              quantity: 1,
+              unit: null,
+              unitPrice: 50.0,
+              discount: null,
+              taxRate: null,
+              taxAmount: null,
+              lineSubtotal: 50.0,
+              lineTotal: 50.0,
+            },
+            {
+              lineNumber: 2,
+              description: 'Promotional Discount - Spring Special',
+              sku: null,
+              quantity: 1,
+              unit: null,
+              unitPrice: -12.5, // AI extracted as negative unit price!
+              discount: null,
+              taxRate: null,
+              taxAmount: null,
+              lineSubtotal: -12.5,
+              lineTotal: -12.5,
+            },
+          ],
+          totals: {
+            subtotal: 50.0,
+            discountTotal: null,
+            taxTotal: 0,
+            taxesBreakdown: null,
+            shippingCharges: null,
+            additionalCharges: null,
+            rounding: null,
+            grandTotal: 37.5,
+            paidAmount: 37.5,
+            balanceDue: 37.5, // Extracted as $37.50, but expected 37.50 - 37.50 = 0.00
+          },
+          payment: null,
+        };
+      };
+
+      const processingService = new DocumentProcessingService(mockAi, config);
+
+      // 1. Direct Service Call
+      const result = await processingService.processDocument(
+        pdfBuffer,
+        'Downloadable-PDF-Invoices-Add-On-Samples.pdf'
+      );
+
+      // A. Promotional -$12.50 must remain correctly interpreted as a discount
+      expect(result.summary.corrections?.length).toBe(1);
+      expect(result.summary.corrections?.[0]?.source).toBe('AUTOMATIC_ENGINE');
+      expect(result.summary.corrections?.[0]?.reason).toContain('promotional');
+      expect(result.document.lineItems[1]?.unitPrice).toBe(0);
+      expect(result.document.lineItems[1]?.discount).toBe(12.5);
+      expect(result.document.totals.discountTotal).toBe(12.5);
+
+      // B. Subtotal/grand total should remain $37.50
+      expect(result.document.totals.grandTotal).toBe(37.5);
+      expect(result.summary.financial.grandTotal).toBe(37.5);
+
+      // C. Extracted balanceDue $37.50 vs expected $0.00 must remain an unresolved discrepancy
+      expect(result.reconciliation.isVerified).toBe(false);
+      expect(result.reconciliation.overallStatus).toBe('DISCREPANCY');
+      const balanceDueDiscrepancy = result.reconciliation.discrepancies.find((d) =>
+        d.includes('Balance due discrepancy')
+      );
+      expect(balanceDueDiscrepancy).toBeDefined();
+      expect(balanceDueDiscrepancy).toContain('Expected 0.00');
+      expect(balanceDueDiscrepancy).toContain('37.50');
+
+      // D. The backend must NOT return DOCUMENT_PROCESSING_FAILED; it must return REVIEW_REQUIRED
+      expect(result.success).toBe(true);
+      expect(result.summary.status).toBe('REVIEW_REQUIRED');
+
+      // E. XLSX must be generated if technically safe
+      expect(result.xlsxBase64).toBeDefined();
+      expect(result.xlsxVerification.isValid).toBe(true);
+
+      // F. reviewToken must be generated
+      expect(result.summary.review?.required).toBe(true);
+      expect(typeof result.summary.review?.reviewToken).toBe('string');
+      expect(result.summary.review?.reviewToken?.length).toBeGreaterThan(20);
+
+      // G. reconciliation.isVerified must remain false
+      expect(result.isVerified).toBe(false);
+      expect(result.reconciliation.isVerified).toBe(false);
+
+      // H. The issue must be visible to the frontend
+      const reconIssue = result.summary.issues?.find(
+        (i) => i.type === 'RECONCILIATION_WARNING'
+      );
+      expect(reconIssue).toBeDefined();
+      expect(reconIssue?.status).toBe('OPEN');
+      expect(reconIssue?.message).toContain('Balance due discrepancy');
+
+      // I. No VERIFIED badge/status may be returned
+      expect(result.summary.status).not.toBe('VERIFIED');
+      expect(result.summary.status).not.toBe('VERIFIED_WITH_CORRECTIONS');
+
+      // 2. HTTP POST /api/v1/documents/process flow
+      const app = await buildApp({ config, aiProvider: mockAi });
+      await app.ready();
+
+      const boundary = '----AddOnSampleBoundary987';
+      const multipartBody = Buffer.concat([
+        Buffer.from(
+          `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="Downloadable-PDF-Invoices-Add-On-Samples.pdf"\r\nContent-Type: application/pdf\r\n\r\n`
+        ),
+        pdfBuffer,
+        Buffer.from(`\r\n--${boundary}--\r\n`),
+      ]);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/documents/process',
+        headers: {
+          'content-type': `multipart/form-data; boundary=${boundary}`,
+        },
+        payload: multipartBody,
+      });
+
+      expect(response.statusCode).toBe(200);
+      const apiBody = JSON.parse(response.body);
+      expect(apiBody.success).toBe(true);
+      expect(apiBody.data.summary.status).toBe('REVIEW_REQUIRED');
+      expect(apiBody.data.isVerified).toBe(false);
+      expect(apiBody.data.reconciliation.isVerified).toBe(false);
+      expect(apiBody.data.summary.review.required).toBe(true);
+      expect(apiBody.data.summary.review.reviewToken).toBeDefined();
+      expect(apiBody.data.xlsxBase64).toBeDefined();
+
+      await app.close();
+    });
+  });
 });
+

@@ -362,7 +362,7 @@ describe('Comprehensive End-to-End Audited Backend Verification', () => {
   });
 
   // 9. RECONCILIATION FAILURE
-  it('Reconciliation Failure: returns 422 with exact discrepancy breakdown when figures do not balance', async () => {
+  it('Reconciliation Discrepancy: returns 200 REVIEW_REQUIRED with exact discrepancy breakdown and reviewToken when figures do not balance', async () => {
     const unbalancedAi = new MockAIProvider();
     unbalancedAi.mockExtractionData = {
       ...unbalancedAi.mockExtractionData,
@@ -388,12 +388,15 @@ describe('Comprehensive End-to-End Audited Backend Verification', () => {
       payload,
     });
 
-    expect(res.statusCode).toBe(422);
+    expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
-    expect(body.success).toBe(false);
-    expect(body.error.code).toBe('DOCUMENT_PROCESSING_FAILED');
-    expect(body.error.message).toContain('reconciliation failed');
-    expect(body.error.details.discrepancies.length).toBeGreaterThan(0);
+    expect(body.success).toBe(true);
+    expect(body.data.isVerified).toBe(false);
+    expect(body.data.reconciliation.isVerified).toBe(false);
+    expect(body.data.summary.status).toBe('REVIEW_REQUIRED');
+    expect(body.data.summary.review.required).toBe(true);
+    expect(body.data.summary.review.reviewToken).toBeDefined();
+    expect(body.data.reconciliation.discrepancies.length).toBeGreaterThan(0);
 
     await localApp.close();
   });
