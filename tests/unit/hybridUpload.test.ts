@@ -483,5 +483,22 @@ describe('Hybrid PDF Upload & Transport Layer Suite', () => {
 
       await authApp.close();
     });
+
+    it('defensively sanitizes surrounding quotes and assignment prefixes in BLOB_READ_WRITE_TOKEN', () => {
+      const configWithQuotes = loadConfig({
+        NODE_ENV: 'test',
+        BLOB_READ_WRITE_TOKEN: '"vercel_blob_rw_test_token_123"',
+      });
+      expect(configWithQuotes.blobReadWriteToken).toBe('vercel_blob_rw_test_token_123');
+
+      const configWithPrefix = loadConfig({
+        NODE_ENV: 'test',
+        BLOB_READ_WRITE_TOKEN: 'BLOB_READ_WRITE_TOKEN="vercel_blob_rw_test_token_456"',
+      });
+      expect(configWithPrefix.blobReadWriteToken).toBe('vercel_blob_rw_test_token_456');
+
+      const service = new BlobStorageService(configWithPrefix, mockBlobAdapter);
+      expect((service as any).getToken()).toBe('vercel_blob_rw_test_token_456');
+    });
   });
 });

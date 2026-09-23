@@ -180,9 +180,18 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     accessRateLimitMax: raw.ACCESS_RATE_LIMIT_MAX,
     accessRateLimitWindowMs: raw.ACCESS_RATE_LIMIT_WINDOW_MS,
     frontendOrigin: raw.FRONTEND_ORIGIN?.trim(),
-    blobReadWriteToken: raw.BLOB_READ_WRITE_TOKEN && raw.BLOB_READ_WRITE_TOKEN.trim()
-      ? raw.BLOB_READ_WRITE_TOKEN.trim()
-      : undefined,
+    blobReadWriteToken: (() => {
+      const rawToken = raw.BLOB_READ_WRITE_TOKEN?.trim();
+      if (!rawToken) return undefined;
+      let t = rawToken;
+      if (t.startsWith('BLOB_READ_WRITE_TOKEN=')) {
+        t = t.slice('BLOB_READ_WRITE_TOKEN='.length).trim();
+      }
+      if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+        t = t.slice(1, -1).trim();
+      }
+      return t.length > 0 ? t : undefined;
+    })(),
   };
 
   // Startup validation: Ensure model names are non-empty
