@@ -68,7 +68,16 @@ export class DocumentInputResolver {
     }
 
     // Mode B: Private Vercel Blob reference via JSON
-    const parseResult = blobInputSchema.safeParse(request.body);
+    let body = request.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch {
+        // Fallback to raw for schema validation error
+      }
+    }
+
+    const parseResult = blobInputSchema.safeParse(body);
     if (!parseResult.success) {
       throw new FileValidationError(
         'Invalid content-type or payload. Expected multipart/form-data with PDF file or application/json with a valid blobPathname.'

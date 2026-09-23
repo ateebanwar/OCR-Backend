@@ -225,30 +225,48 @@ export class BlobStorageService {
    * Reads a ReadableStream into a Buffer, enforcing the maximum byte limit on the fly.
    */
   private async streamToBufferWithLimit(
-    stream: ReadableStream<Uint8Array>,
+    stream: any,
     maxBytes: number
   ): Promise<Buffer> {
     const chunks: Buffer[] = [];
     let totalBytes = 0;
-    const reader = stream.getReader();
 
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) {
-          totalBytes += value.byteLength;
-          if (totalBytes > maxBytes) {
-            await reader.cancel('File size exceeds maximum allowed size');
-            throw new FileValidationError(
-              `Uploaded file exceeds the maximum allowed size of ${maxBytes / (1024 * 1024)}MB.`
-            );
+    if (stream && typeof stream.getReader === 'function') {
+      const reader = stream.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) {
+            totalBytes += value.byteLength;
+            if (totalBytes > maxBytes) {
+              await reader.cancel('File size exceeds maximum allowed size');
+              throw new FileValidationError(
+                `Uploaded file exceeds the maximum allowed size of ${maxBytes / (1024 * 1024)}MB.`
+              );
+            }
+            chunks.push(Buffer.from(value.buffer, value.byteOffset, value.byteLength));
           }
-          chunks.push(Buffer.from(value.buffer, value.byteOffset, value.byteLength));
         }
+      } finally {
+        reader.releaseLock();
       }
-    } finally {
-      reader.releaseLock();
+    } else if (stream && typeof stream[Symbol.asyncIterator] === 'function') {
+      for await (const chunk of stream) {
+        const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+        totalBytes += buf.length;
+        if (totalBytes > maxBytes) {
+          if (typeof stream.destroy === 'function') {
+            stream.destroy();
+          }
+          throw new FileValidationError(
+            `Uploaded file exceeds the maximum allowed size of ${maxBytes / (1024 * 1024)}MB.`
+          );
+        }
+        chunks.push(buf);
+      }
+    } else {
+      throw new FileValidationError('Invalid stream received from storage.');
     }
 
     return Buffer.concat(chunks);
