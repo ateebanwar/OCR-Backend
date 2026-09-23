@@ -2,6 +2,9 @@
  * Processing Domain Models: Lifecycles, Complexity, and Reconciliation States
  */
 
+import { ModelInvocationRecord } from './telemetry';
+import { VerificationGateResult } from '../validation/verificationGate';
+
 export type ProcessingStage =
   | 'RECEIVED'
   | 'VALIDATING_FILE'
@@ -132,4 +135,6 @@ export interface ProcessingAuditTrail {
   escalationCount: number;
   correctionCount?: number;
   modelsUsed: string[];
+  modelInvocations?: ModelInvocationRecord[];
+  verificationGate?: VerificationGateResult;
 }

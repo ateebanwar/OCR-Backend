@@ -3,6 +3,7 @@ import { RawFinancialExtraction } from '../extraction/schemas/financialSchema';
 import { getSecondPassVerificationPrompt } from '../extraction/promptTemplates';
 import { AppConfig } from '../config/env';
 import { getVerificationModel } from '../config/models';
+import { ModelInvocationTracker } from '../domain/telemetry';
 
 export interface SecondPassVerificationResult {
   isVerified: boolean;
@@ -24,10 +25,17 @@ export class VerificationService {
   public async verifyExtraction(
     pdfBuffer: Buffer,
     filename: string,
-    extractedData: RawFinancialExtraction
+    extractedData: RawFinancialExtraction,
+    tracker?: ModelInvocationTracker
   ): Promise<SecondPassVerificationResult> {
     const prompt = getSecondPassVerificationPrompt(extractedData);
-    const verificationModel = (this.config.gemini?.verificationModel && this.config.gemini.verificationModel.trim()) || getVerificationModel();
+    const verificationModel =
+      (this.config.gemini?.verificationModel && this.config.gemini.verificationModel.trim()) ||
+      getVerificationModel();
+
+    const onInvocation = tracker
+      ? (record: Parameters<ModelInvocationTracker['record']>[0]) => tracker.record(record)
+      : undefined;
 
     try {
       const result = await this.aiProvider.extractStructuredData<{
@@ -49,24 +57,31 @@ export class VerificationService {
         {
           model: verificationModel,
           temperature: 0.0,
+          purpose: 'VERIFICATION',
+          onInvocation,
         }
       );
 
+      const hasDiscrepancy = Boolean(result.issuesFound && result.issuesFound.length > 0);
+      const isVerified = result.isVerified === true && !hasDiscrepancy;
+
       return {
-        isVerified: result.isVerified ?? true,
-        confidenceScore: result.confidenceScore ?? 0.95,
+        isVerified,
+        confidenceScore: result.confidenceScore ?? (isVerified ? 1.0 : 0.5),
         issuesFound: result.issuesFound ?? [],
         correctionsNeeded: result.correctionsNeeded ?? [],
-        verifierNotes: 'Second-pass audit completed successfully.',
+        verifierNotes: isVerified
+          ? 'Second-pass audit completed successfully with no discrepancies.'
+          : 'Second-pass audit flagged potential discrepancies between extracted data and source document.',
       };
     } catch {
-      // In case the second-pass provider call encounters issues, fall back safely with an audit note
+      // If the second-pass audit call times out or fails, preserve unverified status safely
       return {
-        isVerified: true,
-        confidenceScore: 0.85,
-        issuesFound: [],
+        isVerified: false,
+        confidenceScore: 0.0,
+        issuesFound: ['Second-pass audit verification was unable to complete due to provider timeout or error.'],
         correctionsNeeded: [],
-        verifierNotes: 'Second-pass audit skipped due to temporary provider response timeout; deterministic reconciliation remains primary.',
+        verifierNotes: 'Second-pass audit unverified due to provider timeout; deterministic reconciliation remains primary.',
       };
     }
   }

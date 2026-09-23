@@ -1,4 +1,5 @@
 import { ChatMessage, ChatOptions, ChatResponse, ChatStreamChunk } from '../../domain/chat';
+import { ModelInvocationRecord } from '../../domain/telemetry';
 
 export interface DocumentInput {
   buffer: Buffer;
@@ -17,6 +18,8 @@ export interface ProviderOptions {
   temperature?: number;
   maxOutputTokens?: number;
   timeoutMs?: number;
+  purpose?: 'EXTRACTION' | 'RETRY' | 'FALLBACK' | 'ESCALATION' | 'CORRECTION' | 'VERIFICATION' | 'CHAT';
+  onInvocation?: (record: ModelInvocationRecord) => void;
 }
 
 export interface DocumentAnalysisResult {

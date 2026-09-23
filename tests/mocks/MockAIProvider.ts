@@ -130,11 +130,31 @@ export class MockAIProvider implements AIProvider {
     options?: ProviderOptions
   ): Promise<T> {
     this.extractCallCount++;
+    if (options?.onInvocation) {
+      options.onInvocation({
+        provider: this.providerName,
+        model: options.model || 'mock-model',
+        purpose: options.purpose || 'EXTRACTION',
+        attempt: this.extractCallCount,
+        durationMs: 10,
+        timestamp: new Date().toISOString(),
+        outcome: 'SUCCESS',
+      });
+    }
     if (this.customExtractHandler) {
       return (await this.customExtractHandler(doc, promptContext, options, this.extractCallCount)) as T;
     }
     if (this.shouldFail) {
       throw new Error(this.failureMessage);
+    }
+    if (options?.purpose === 'VERIFICATION' || promptContext.userPrompt.includes('SECOND-PASS')) {
+      return {
+        isVerified: true,
+        confidenceScore: 1.0,
+        issuesFound: [],
+        correctionsNeeded: [],
+        verifierNotes: 'Mock second-pass verification passed with no discrepancies.',
+      } as unknown as T;
     }
     return this.mockExtractionData as unknown as T;
   }

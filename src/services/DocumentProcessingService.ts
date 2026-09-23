@@ -17,6 +17,8 @@ import {
   StageDuration,
 } from '../domain/processing';
 import { DocumentProcessingError } from '../errors/AppError';
+import { ModelInvocationTracker } from '../domain/telemetry';
+import { evaluateFinalVerificationGate } from '../validation/verificationGate';
 
 export interface DocumentProcessingResult {
   success: boolean;
@@ -48,6 +50,7 @@ export class DocumentProcessingService {
   ): Promise<DocumentProcessingResult> {
     const overallStartTime = Date.now();
     const stageDurations: StageDuration[] = [];
+    const invocationTracker = new ModelInvocationTracker();
 
     const recordStage = (stage: ProcessingStage, startTime: number) => {
       stageDurations.push({
@@ -82,7 +85,8 @@ export class DocumentProcessingService {
     const extractionResult = await this.extractionService.extractFinancialDocument(
       validatedFile.buffer,
       validatedFile.originalFilename,
-      complexity.level
+      complexity.level,
+      invocationTracker
     );
     recordStage('EXTRACTING', stageStart);
 
@@ -95,7 +99,7 @@ export class DocumentProcessingService {
     coverageTracker.markAllProcessed();
     const coverage = coverageTracker.getCoverage();
 
-    // Completeness Check
+    // Completeness Check (Type and layout aware)
     const completeness = validateCompleteness(extractionResult.data, coverage);
 
     // Canonical Document Assembly
@@ -126,16 +130,12 @@ export class DocumentProcessingService {
     const secondPass = await this.verificationService.verifyExtraction(
       validatedFile.buffer,
       validatedFile.originalFilename,
-      extractionResult.data
+      extractionResult.data,
+      invocationTracker
     );
     recordStage('VERIFYING_SECOND_PASS', stageStart);
 
-    const isVerified =
-      extractionResult.reconciliation.isVerified &&
-      secondPass.isVerified &&
-      completeness.isComplete;
-
-    // Check for unresolvable financial discrepancies
+    // Check for unresolvable financial discrepancies (Deterministic Reconciliation Authority)
     if (!extractionResult.reconciliation.isVerified) {
       recordStage('FAILED', stageStart);
       throw new DocumentProcessingError(
@@ -173,13 +173,30 @@ export class DocumentProcessingService {
 
     recordStage('COMPLETED', stageStart);
 
+    // Final Verification Gate: Strict multi-pillar aggregation AFTER XLSX verification
+    const gateResult = evaluateFinalVerificationGate({
+      reconciliation: extractionResult.reconciliation,
+      secondPass,
+      completeness,
+      semanticValidation: extractionResult.semanticResult,
+      xlsxVerification,
+    });
+
     const verificationModel =
       (this.config.gemini?.verificationModel && this.config.gemini.verificationModel.trim()) ||
       'gemini-3.7-flash';
 
-    const fallbackCandidate = extractionResult.modelsUsed.find(
-      (m) => m === 'gemini-flash-lite-latest' || m === 'gemini-3.5-flash-lite'
+    // Model Telemetry from Invocation Tracker
+    const telemetry = invocationTracker.getSummary();
+    const modelsUsed = Array.from(
+      new Set([...extractionResult.modelsUsed, ...telemetry.modelsUsed, verificationModel])
     );
+
+    const retryCount = extractionResult.retriesAttempted;
+    const escalationCount = extractionResult.escalationCount;
+    const correctionCount = extractionResult.correctionCount;
+    const fallbackUsed = telemetry.fallbackUsed || extractionResult.fallbackUsed;
+    const fallbackModel = telemetry.fallbackModel || extractionResult.fallbackModel;
 
     const auditTrail: ProcessingAuditTrail = {
       stages: stageDurations,
@@ -190,12 +207,14 @@ export class DocumentProcessingService {
       selectedModelTier: complexity.selectedTier,
       selectedModel: complexity.recommendedModel,
       verificationModel,
-      fallbackUsed: Boolean(fallbackCandidate),
-      fallbackModel: fallbackCandidate,
-      retryCount: extractionResult.retriesAttempted,
-      escalationCount: extractionResult.escalationLevel,
-      correctionCount: extractionResult.correctionCount,
-      modelsUsed: extractionResult.modelsUsed,
+      fallbackUsed,
+      fallbackModel,
+      retryCount,
+      escalationCount,
+      correctionCount,
+      modelsUsed,
+      modelInvocations: telemetry.allInvocations,
+      verificationGate: gateResult,
     };
 
     return {
@@ -203,7 +222,7 @@ export class DocumentProcessingService {
       documentId: validatedFile.documentId,
       sourceFilename: validatedFile.originalFilename,
       documentHash,
-      isVerified,
+      isVerified: gateResult.isVerified,
       document: canonicalDoc,
       reconciliation: extractionResult.reconciliation,
       auditTrail,

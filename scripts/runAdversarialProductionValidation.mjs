@@ -164,6 +164,24 @@ async function main() {
       expectedItems: 2,
     },
     {
+      file: path.join(FIXTURES_DIR, 'test08_onepage_complex.pdf'),
+      name: 'test08_onepage_complex.pdf',
+      type: '1-Page Complex Dense Vector Grid',
+      expectedSubtotal: 1950.0,
+      expectedTax: 195.0,
+      expectedTotal: 2145.0,
+      expectedItems: 3,
+    },
+    {
+      file: path.join(FIXTURES_DIR, 'test07_high_complexity.pdf'),
+      name: 'test07_high_complexity.pdf',
+      type: '3-Page Multi-Currency Statement (High Complexity)',
+      expectedSubtotal: 23000.0,
+      expectedTax: 4370.0,
+      expectedTotal: 27370.0,
+      expectedItems: 5,
+    },
+    {
       file: path.join(FIXTURES_DIR, 'test14_prompt_injection.pdf'),
       name: 'test14_prompt_injection.pdf',
       type: 'Adversarial Prompt Injection PDF',
@@ -200,6 +218,17 @@ async function main() {
       console.log('    Reconciliation State:', result.reconciliation.overallStatus);
       console.log('    Tolerance Applied:   ', result.reconciliation.toleranceApplied);
       console.log('    Is Verified:         ', result.isVerified);
+      if (result.auditTrail.verificationGate) {
+        console.log('    Gate Results:        ', JSON.stringify({
+          isVerified: result.auditTrail.verificationGate.isVerified,
+          reconciliationVerified: result.auditTrail.verificationGate.reconciliationVerified,
+          secondPassVerified: result.auditTrail.verificationGate.secondPassVerified,
+          completenessVerified: result.auditTrail.verificationGate.completenessVerified,
+          semanticVerified: result.auditTrail.verificationGate.semanticVerified,
+          xlsxVerified: result.auditTrail.verificationGate.xlsxVerified,
+          failureReasons: result.auditTrail.verificationGate.gateFailureReasons,
+        }));
+      }
 
       // Verify ground truth
       const extractedSubtotal = result.document.totals?.subtotal;

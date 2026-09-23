@@ -190,6 +190,10 @@ export class GeminiProvider implements AIProvider {
     let lastError: unknown;
     for (let i = 0; i < candidateModels.length; i++) {
       const modelName = candidateModels[i]!;
+      const attemptStart = Date.now();
+      const isFallbackAttempt = i > 0;
+      const currentPurpose = isFallbackAttempt ? 'FALLBACK' : (options?.purpose || 'EXTRACTION');
+
       try {
         const model = client.getGenerativeModel({
           model: modelName,
@@ -213,15 +217,43 @@ export class GeminiProvider implements AIProvider {
           return response.response.text();
         }, timeoutMs);
 
+        const durationMs = Date.now() - attemptStart;
+        if (options?.onInvocation) {
+          options.onInvocation({
+            provider: this.providerName,
+            model: modelName,
+            purpose: currentPurpose,
+            attempt: i + 1,
+            durationMs,
+            timestamp: new Date().toISOString(),
+            outcome: 'SUCCESS',
+          });
+        }
+
         const cleaned = this.cleanJsonOutput(rawOutput);
         return JSON.parse(cleaned) as T;
       } catch (err: unknown) {
         lastError = err;
+        const durationMs = Date.now() - attemptStart;
         const msg = err instanceof Error ? err.message : String(err);
         const isTransient =
           msg.includes('503') ||
           msg.toLowerCase().includes('high demand') ||
           msg.includes('429');
+
+        if (options?.onInvocation) {
+          options.onInvocation({
+            provider: this.providerName,
+            model: modelName,
+            purpose: currentPurpose,
+            attempt: i + 1,
+            durationMs,
+            timestamp: new Date().toISOString(),
+            outcome: isTransient && i < candidateModels.length - 1 ? 'FALLBACK' : 'FAILURE',
+            trigger: isTransient ? 'TRANSIENT_503_OR_429' : 'API_ERROR',
+            error: msg,
+          });
+        }
 
         if (isTransient && i < candidateModels.length - 1) {
           continue;
