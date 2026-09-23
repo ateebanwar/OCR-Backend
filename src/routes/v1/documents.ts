@@ -111,11 +111,23 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
       const input = await inputResolver.resolveInput(request);
       try {
         const result = await processingService.processDocument(input.buffer, input.filename);
-        return reply.status(200).send(formatSuccessResponse(result, request.requestId));
-      } finally {
         if (input.cleanup) {
-          await input.cleanup();
+          try {
+            await input.cleanup();
+          } catch (e) {
+            request.log.warn({ err: e }, 'Error during input cleanup');
+          }
         }
+        return reply.status(200).send(formatSuccessResponse(result, request.requestId));
+      } catch (err) {
+        if (input.cleanup) {
+          try {
+            await input.cleanup();
+          } catch (e) {
+            request.log.warn({ err: e }, 'Error during input cleanup on error');
+          }
+        }
+        throw err;
       }
     }
   );
