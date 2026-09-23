@@ -12,14 +12,18 @@ import { requestIdHook } from '../middleware/requestId';
 import { globalErrorHandler } from '../middleware/errorHandler';
 import { apiRouter } from '../routes/router';
 
+import { BlobStorageService } from '../services/BlobStorageService';
+
 export interface BuildAppOptions {
   config?: AppConfig;
   aiProvider?: AIProvider;
+  blobStorageService?: BlobStorageService;
 }
 
 export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
   const config = options.config || getConfig();
   const aiProvider = options.aiProvider || getAIProvider(config);
+  const blobStorageService = options.blobStorageService;
 
   const app = Fastify({
     trustProxy: true,
@@ -122,7 +126,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   app.setErrorHandler(globalErrorHandler);
 
   // 8. Register Routes
-  await app.register(apiRouter, { config, aiProvider });
+  await app.register(apiRouter, { config, aiProvider, blobStorageService });
 
   return app;
 }

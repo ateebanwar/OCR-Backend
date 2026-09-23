@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 import { ConfigurationError } from '../errors/AppError';
 
 export const DEFAULT_TIER1_MODEL = 'gemini-3.6-flash';
@@ -33,10 +33,13 @@ const envSchema = z.object({
   
   ALLOWED_ORIGINS: z.string().default('https://ocr-front-end-iota.vercel.app,http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000'),
   
-  MAX_UPLOAD_SIZE_MB: z.coerce.number().positive().default(15),
+  MAX_UPLOAD_SIZE_MB: z.coerce.number().positive().default(25),
+  DIRECT_UPLOAD_MAX_MB: z.coerce.number().positive().default(4),
   MAX_PDF_PAGES: z.coerce.number().positive().max(500).default(50),
   REQUEST_TIMEOUT_MS: z.coerce.number().positive().default(60000),
   AI_TIMEOUT_MS: z.coerce.number().positive().default(60000),
+  
+  BLOB_READ_WRITE_TOKEN: z.string().optional().default(''),
   
   RATE_LIMIT_MAX: z.coerce.number().positive().default(60),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().positive().default(60000),
@@ -79,6 +82,7 @@ export interface AppConfig {
   };
   allowedOrigins: string[];
   maxUploadSizeBytes: number;
+  directUploadMaxBytes: number;
   maxPdfPages: number;
   requestTimeoutMs: number;
   aiTimeoutMs: number;
@@ -97,6 +101,7 @@ export interface AppConfig {
   accessRateLimitMax: number;
   accessRateLimitWindowMs: number;
   frontendOrigin?: string;
+  blobReadWriteToken?: string;
 }
 
 let cachedConfig: AppConfig | null = null;
@@ -154,6 +159,7 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     },
     allowedOrigins,
     maxUploadSizeBytes: raw.MAX_UPLOAD_SIZE_MB * 1024 * 1024,
+    directUploadMaxBytes: raw.DIRECT_UPLOAD_MAX_MB * 1024 * 1024,
     maxPdfPages: raw.MAX_PDF_PAGES,
     requestTimeoutMs: raw.REQUEST_TIMEOUT_MS,
     aiTimeoutMs: raw.AI_TIMEOUT_MS,
@@ -174,6 +180,9 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     accessRateLimitMax: raw.ACCESS_RATE_LIMIT_MAX,
     accessRateLimitWindowMs: raw.ACCESS_RATE_LIMIT_WINDOW_MS,
     frontendOrigin: raw.FRONTEND_ORIGIN?.trim(),
+    blobReadWriteToken: raw.BLOB_READ_WRITE_TOKEN && raw.BLOB_READ_WRITE_TOKEN.trim()
+      ? raw.BLOB_READ_WRITE_TOKEN.trim()
+      : undefined,
   };
 
   // Startup validation: Ensure model names are non-empty

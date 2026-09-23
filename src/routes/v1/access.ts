@@ -32,6 +32,10 @@ export const accessRoutes: FastifyPluginAsync<AccessRouteOptions> = async (
       formatSuccessResponse(
         {
           passwordRequired: accessService.isPasswordRequired(),
+          uploadConfig: {
+            directUploadMaxBytes: config.directUploadMaxBytes,
+            maxUploadSizeBytes: config.maxUploadSizeBytes,
+          },
         },
         request.requestId
       )

@@ -2,6 +2,8 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { DocumentProcessingService } from '../../services/DocumentProcessingService';
 import { ChatService } from '../../services/ChatService';
+import { DocumentInputResolver } from '../../services/DocumentInputResolver';
+import { BlobStorageService } from '../../services/BlobStorageService';
 import { formatSuccessResponse } from '../../api/response';
 import { FileValidationError, ValidationError } from '../../errors/AppError';
 import { AppConfig } from '../../config/env';
@@ -13,11 +15,16 @@ import { sanitizeFilename } from '../../security/fileValidator';
 export interface DocumentRouteOptions {
   config: AppConfig;
   aiProvider: AIProvider;
+  blobStorageService?: BlobStorageService;
 }
 
 const downloadBodySchema = z.object({
   xlsxBase64: z.string().min(10, 'Valid base64 XLSX content is required'),
   filename: z.string().max(100, 'Filename exceeds maximum length').optional().default('financial_report.xlsx'),
+});
+
+const uploadTokenBodySchema = z.object({
+  filename: z.string().max(255).optional().default('document.pdf'),
 });
 
 const documentChatSchema = z.object({
@@ -56,38 +63,60 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
   fastify: FastifyInstance,
   options
 ) => {
-  const { config, aiProvider } = options;
+  const { config, aiProvider, blobStorageService } = options;
   const processingService = new DocumentProcessingService(aiProvider, config);
   const chatService = new ChatService(aiProvider, config);
+  const blobService = blobStorageService || new BlobStorageService(config);
+  const inputResolver = new DocumentInputResolver(config, blobService);
   const concurrencyGuard = createConcurrencyGuard(config);
   const authGuard = createAuthGuard(config);
 
+  // POST /api/v1/documents/upload-token
+  // Issues an authorized, controlled client token for direct private Vercel Blob uploads
+  fastify.post(
+    '/documents/upload-token',
+    {
+      preHandler: authGuard,
+      config: {
+        rateLimit: {
+          max: config.rateLimitMax,
+          timeWindow: config.rateLimitWindowMs,
+        },
+      },
+    },
+    async (request, reply) => {
+      // Check if request is official @vercel/blob/client handleUpload event
+      const body = request.body as Record<string, unknown> | undefined;
+      if (body && typeof body === 'object' && typeof body['type'] === 'string' && body['type'].startsWith('blob.')) {
+        const clientUploadRes = await blobService.handleClientUpload(request, body as any);
+        return reply.status(200).send(clientUploadRes);
+      }
+
+      const parseResult = uploadTokenBodySchema.safeParse(request.body || {});
+      if (!parseResult.success) {
+        throw new ValidationError('Invalid upload-token payload.', parseResult.error.errors);
+      }
+
+      const result = await blobService.generateUploadToken(parseResult.data.filename);
+      return reply.status(200).send(formatSuccessResponse(result, request.requestId));
+    }
+  );
+
   // POST /api/v1/documents/process
+  // Supports both direct multipart uploads and private Vercel Blob references seamlessly
   fastify.post(
     '/documents/process',
     { preHandler: [authGuard, concurrencyGuard] },
     async (request, reply) => {
-      if (!request.isMultipart()) {
-        throw new FileValidationError('Invalid content-type. Expected multipart/form-data.');
+      const input = await inputResolver.resolveInput(request);
+      try {
+        const result = await processingService.processDocument(input.buffer, input.filename);
+        return reply.status(200).send(formatSuccessResponse(result, request.requestId));
+      } finally {
+        if (input.cleanup) {
+          await input.cleanup();
+        }
       }
-
-      const data = await request.file();
-
-      if (!data) {
-        throw new FileValidationError('No file uploaded. Please upload a PDF file using multipart/form-data.');
-      }
-
-      if (data.file.truncated) {
-        throw new FileValidationError('Uploaded file exceeds the maximum allowed size.');
-      }
-
-      const buffer = await data.toBuffer();
-      if (!buffer || buffer.length === 0) {
-        throw new FileValidationError('Uploaded file buffer is empty.');
-      }
-
-      const result = await processingService.processDocument(buffer, data.filename);
-      return reply.status(200).send(formatSuccessResponse(result, request.requestId));
     }
   );
 
