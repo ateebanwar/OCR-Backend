@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { FastifyInstance } from 'fastify';
 import { buildApp } from '../../src/app/buildApp';
 import { loadConfig } from '../../src/config/env';
@@ -21,7 +21,8 @@ describe('CORS & Preflight Security Verification', () => {
     await app.close();
   });
 
-  it('handles OPTIONS preflight from http://127.0.0.1:3000 with 204 and correct CORS headers', async () => {
+  // Requirement 1 & 3: Local dev origins with OPTIONS preflight
+  it('handles OPTIONS preflight from http://127.0.0.1:3000 on /api/v1/access/status with 204 and correct CORS headers', async () => {
     const res = await app.inject({
       method: 'OPTIONS',
       url: '/api/v1/access/status',
@@ -41,6 +42,92 @@ describe('CORS & Preflight Security Verification', () => {
     expect(res.headers['access-control-allow-headers']).toBeDefined();
   });
 
+  // Requirement 5: Test documents/process preflight and POST
+  it('handles OPTIONS preflight on /api/v1/documents/process from http://127.0.0.1:3000 with 204', async () => {
+    const res = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/documents/process',
+      headers: {
+        origin: 'http://127.0.0.1:3000',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type,authorization',
+      },
+    });
+
+    expect(res.statusCode).toBe(204);
+    expect(res.headers['access-control-allow-origin']).toBe('http://127.0.0.1:3000');
+    expect(res.headers['access-control-allow-credentials']).toBe('true');
+    expect(res.headers['access-control-allow-methods']).toContain('POST');
+  });
+
+  // Requirement 10: Error responses contain CORS headers
+  it('preserves CORS headers on 400 error response from /api/v1/documents/process', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/documents/process',
+      headers: {
+        origin: 'http://127.0.0.1:3000',
+        authorization: 'Bearer dummy-token',
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.headers['access-control-allow-origin']).toBe('http://127.0.0.1:3000');
+    expect(res.headers['access-control-allow-credentials']).toBe('true');
+  });
+
+  // Requirement 5: Test documents/download preflight
+  it('handles OPTIONS preflight on /api/v1/documents/download from http://127.0.0.1:3000 with 204', async () => {
+    const res = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/documents/download',
+      headers: {
+        origin: 'http://127.0.0.1:3000',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type,authorization',
+      },
+    });
+
+    expect(res.statusCode).toBe(204);
+    expect(res.headers['access-control-allow-origin']).toBe('http://127.0.0.1:3000');
+    expect(res.headers['access-control-allow-credentials']).toBe('true');
+  });
+
+  // Requirement 5: Test documents/review preflight
+  it('handles OPTIONS preflight on /api/v1/documents/review from http://127.0.0.1:3000 with 204', async () => {
+    const res = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/documents/review',
+      headers: {
+        origin: 'http://127.0.0.1:3000',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type,authorization',
+      },
+    });
+
+    expect(res.statusCode).toBe(204);
+    expect(res.headers['access-control-allow-origin']).toBe('http://127.0.0.1:3000');
+    expect(res.headers['access-control-allow-credentials']).toBe('true');
+  });
+
+  // Requirement 5: Test access/verify preflight
+  it('handles OPTIONS preflight on /api/v1/access/verify from http://127.0.0.1:3000 with 204', async () => {
+    const res = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/access/verify',
+      headers: {
+        origin: 'http://127.0.0.1:3000',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type',
+      },
+    });
+
+    expect(res.statusCode).toBe(204);
+    expect(res.headers['access-control-allow-origin']).toBe('http://127.0.0.1:3000');
+    expect(res.headers['access-control-allow-credentials']).toBe('true');
+  });
+
+  // Requirement 1: Allow all local development origins
   it('allows http://localhost:3000, http://localhost:5173, and http://127.0.0.1:5173', async () => {
     const origins = [
       'http://localhost:3000',
@@ -64,6 +151,7 @@ describe('CORS & Preflight Security Verification', () => {
     }
   });
 
+  // Requirement 2: Configurable production FRONTEND_ORIGIN
   it('allows configurable production FRONTEND_ORIGIN', async () => {
     const res = await app.inject({
       method: 'OPTIONS',
@@ -78,6 +166,7 @@ describe('CORS & Preflight Security Verification', () => {
     expect(res.headers['access-control-allow-origin']).toBe('https://production-frontend.com');
   });
 
+  // Requirement 7: Never wildcard * on authenticated production API
   it('never uses wildcard "*" for allowed origin on authenticated endpoints', async () => {
     const res = await app.inject({
       method: 'GET',

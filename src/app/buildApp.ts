@@ -7,7 +7,7 @@ import sensible from '@fastify/sensible';
 import { AppConfig, getConfig } from '../config/env';
 import { AIProvider } from '../providers/ai/AIProvider';
 import { getAIProvider } from '../providers/ai/providerFactory';
-import { createCorsOptions } from '../security/cors';
+import { createCorsOptions, isOriginAllowed } from '../security/cors';
 import { requestIdHook } from '../middleware/requestId';
 import { globalErrorHandler } from '../middleware/errorHandler';
 import { apiRouter } from '../routes/router';
@@ -44,10 +44,41 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     bodyLimit: config.maxUploadSizeBytes,
   });
 
-  // Request ID and Tracing Hook (registered first for all subsequent middlewares)
+  // Attach config to app instance for access in handlers
+  (app as any).config = config;
+
+  // 1. CORS Policy - MUST BE REGISTERED FIRST (Req 9)
+  // Ensures preflight OPTIONS requests are handled with 2xx before any routes/middleware,
+  // and CORS headers are established for all endpoints and error states.
+  await app.register(cors, createCorsOptions(config));
+
+  // 2. Request ID and Tracing Hook
   app.addHook('onRequest', requestIdHook);
 
-  // Security Headers (@fastify/helmet)
+  // 3. Ensure CORS headers on all outgoing responses (including error responses) (Req 10)
+  app.addHook('onSend', async (request, reply) => {
+    const origin = request.headers.origin;
+    if (origin && isOriginAllowed(origin, config)) {
+      if (!reply.getHeader('access-control-allow-origin')) {
+        reply.header('Access-Control-Allow-Origin', origin);
+        reply.header('Access-Control-Allow-Credentials', 'true');
+        reply.header('Access-Control-Expose-Headers', 'X-Request-ID, Content-Disposition, Content-Type');
+        reply.header('Vary', 'Origin');
+      }
+    }
+  });
+
+  app.addHook('onError', async (request, reply) => {
+    const origin = request.headers.origin;
+    if (origin && isOriginAllowed(origin, config)) {
+      reply.header('Access-Control-Allow-Origin', origin);
+      reply.header('Access-Control-Allow-Credentials', 'true');
+      reply.header('Access-Control-Expose-Headers', 'X-Request-ID, Content-Disposition, Content-Type');
+      reply.header('Vary', 'Origin');
+    }
+  });
+
+  // 4. Security Headers (@fastify/helmet)
   await app.register(helmet, {
     contentSecurityPolicy: {
       directives: {
@@ -60,10 +91,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     noSniff: true,
   });
 
-  // CORS Policy
-  await app.register(cors, createCorsOptions(config));
-
-  // Rate Limiting Policy
+  // 5. Rate Limiting Policy
   await app.register(rateLimit, {
     max: config.rateLimitMax,
     timeWindow: config.rateLimitWindowMs,
@@ -81,7 +109,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     },
   });
 
-  // Utility & Multipart Plugins
+  // 6. Utility & Multipart Plugins (Req 8: multipart works through CORS)
   await app.register(sensible);
   await app.register(multipart, {
     limits: {
@@ -90,10 +118,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     },
   });
 
-  // Centralized Global Error Handler
+  // 7. Centralized Global Error Handler
   app.setErrorHandler(globalErrorHandler);
 
-  // Register Routes
+  // 8. Register Routes
   await app.register(apiRouter, { config, aiProvider });
 
   return app;

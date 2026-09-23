@@ -1,4 +1,4 @@
-﻿import { FastifyCorsOptions } from '@fastify/cors';
+import { FastifyCorsOptions } from '@fastify/cors';
 import { AppConfig } from '../config/env';
 
 /**
@@ -59,7 +59,7 @@ export function createCorsOptions(config: AppConfig): FastifyCorsOptions {
         cb(null, false);
       }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
@@ -67,6 +67,9 @@ export function createCorsOptions(config: AppConfig): FastifyCorsOptions {
       'Accept',
       'Origin',
       'X-Requested-With',
+      'Cache-Control',
+      'Pragma',
+      'X-Forwarded-For',
     ],
     exposedHeaders: [
       'X-Request-ID',

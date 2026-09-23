@@ -2,6 +2,8 @@ import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { AppError } from '../errors/AppError';
 import { formatErrorResponse } from '../api/response';
 import { scrubObject } from '../security/scrubber';
+import { isOriginAllowed } from '../security/cors';
+import { getConfig } from '../config/env';
 
 export function globalErrorHandler(
   error: FastifyError | AppError | Error,
@@ -9,6 +11,22 @@ export function globalErrorHandler(
   reply: FastifyReply
 ): void {
   const requestId = request.requestId || 'unknown-request-id';
+
+  // Ensure CORS headers are explicitly preserved on error responses (Req 10)
+  const origin = request.headers.origin;
+  if (origin) {
+    try {
+      const config = (request.server as any).config || getConfig();
+      if (isOriginAllowed(origin, config)) {
+        reply.header('Access-Control-Allow-Origin', origin);
+        reply.header('Access-Control-Allow-Credentials', 'true');
+        reply.header('Access-Control-Expose-Headers', 'X-Request-ID, Content-Disposition, Content-Type');
+        reply.header('Vary', 'Origin');
+      }
+    } catch {
+      // Fallback
+    }
+  }
 
   // Check if it is one of our typed AppError instances
   if (error instanceof AppError) {
