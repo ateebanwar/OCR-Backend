@@ -1,0 +1,1 @@
+{"success":false,"error":{"code":"VALIDATION_FAILED","message":"Structural validation failed: [lineItems.1.unitPrice] Unit price cannot be negative","details":["[lineItems.1.unitPrice] Unit price cannot be negative"]},"requestId":"f9f27a14-c515-4949-aa6d-b4b7afd9c673"}

@@ -19,6 +19,14 @@ import {
 import { DocumentProcessingError } from '../errors/AppError';
 import { ModelInvocationTracker } from '../domain/telemetry';
 import { evaluateFinalVerificationGate } from '../validation/verificationGate';
+import {
+  ConversionSummary,
+  DocumentSummaryInfo,
+  FinancialSummaryInfo,
+  VerificationSummaryInfo,
+  XlsxSummaryInfo,
+  conversionSummarySchema,
+} from '../domain/summary';
 
 export interface DocumentProcessingResult {
   success: boolean;
@@ -31,6 +39,7 @@ export interface DocumentProcessingResult {
   auditTrail: ProcessingAuditTrail;
   xlsxBase64: string;
   xlsxVerification: XlsxVerificationReport;
+  summary: ConversionSummary;
 }
 
 export class DocumentProcessingService {
@@ -217,6 +226,103 @@ export class DocumentProcessingService {
       verificationGate: gateResult,
     };
 
+    // Assemble Authoritative Post-Conversion Summaries for Frontend
+    const documentSummary: DocumentSummaryInfo = {
+      sourceFilename: validatedFile.originalFilename,
+      documentType: canonicalDoc.documentType,
+      invoiceNumber: canonicalDoc.invoiceNumber,
+      documentNumber: canonicalDoc.documentNumber,
+      invoiceDate: canonicalDoc.invoiceDate,
+      dueDate: canonicalDoc.dueDate,
+      purchaseOrderNumber: canonicalDoc.purchaseOrderNumber,
+      referenceNumbers: canonicalDoc.referenceNumbers || [],
+      vendorName: canonicalDoc.vendor?.name ?? null,
+      customerName: canonicalDoc.customer?.name ?? null,
+      currency: canonicalDoc.currency,
+      language: canonicalDoc.language,
+      totalPdfPages: canonicalDoc.coverage.totalPages,
+      processedPages: canonicalDoc.coverage.processedPages,
+      extractedPages: canonicalDoc.coverage.extractedPages,
+      failedPages: canonicalDoc.coverage.failedPages,
+      skippedPages: canonicalDoc.coverage.skippedPages,
+      extractionCompleteness: canonicalDoc.coverage.extractionCompleteness,
+      isFullyCovered: canonicalDoc.coverage.isFullyCovered,
+      extractedLineItemCount: canonicalDoc.lineItems.length,
+    };
+
+    const financialSummary: FinancialSummaryInfo = {
+      currency: canonicalDoc.currency,
+      subtotal: canonicalDoc.totals.subtotal,
+      discountTotal: canonicalDoc.totals.discountTotal,
+      taxTotal: canonicalDoc.totals.taxTotal,
+      taxBreakdown: canonicalDoc.totals.taxesBreakdown || null,
+      shippingCharges: canonicalDoc.totals.shippingCharges,
+      additionalCharges: canonicalDoc.totals.additionalCharges,
+      rounding: canonicalDoc.totals.rounding,
+      grandTotal: canonicalDoc.totals.grandTotal,
+      paidAmount: canonicalDoc.totals.paidAmount,
+      balanceDue: canonicalDoc.totals.balanceDue,
+
+      overallReconciliationStatus: extractionResult.reconciliation.overallStatus,
+      reconciliationVerificationStatus: extractionResult.reconciliation.isVerified,
+      calculatedSubtotal: extractionResult.reconciliation.totals.calculatedSubtotal,
+      extractedSubtotal: extractionResult.reconciliation.totals.extractedSubtotal,
+      subtotalVariance: extractionResult.reconciliation.totals.subtotalVariance,
+      calculatedTaxTotal: extractionResult.reconciliation.totals.calculatedTaxTotal,
+      extractedTaxTotal: extractionResult.reconciliation.totals.extractedTaxTotal,
+      taxVariance: extractionResult.reconciliation.totals.taxVariance,
+      calculatedGrandTotal: extractionResult.reconciliation.totals.calculatedGrandTotal,
+      extractedGrandTotal: extractionResult.reconciliation.totals.extractedGrandTotal,
+      grandTotalVariance: extractionResult.reconciliation.totals.grandTotalVariance,
+      calculatedBalanceDue: extractionResult.reconciliation.totals.calculatedBalanceDue,
+      extractedBalanceDue: extractionResult.reconciliation.totals.extractedBalanceDue,
+      balanceDueVariance: extractionResult.reconciliation.totals.balanceDueVariance,
+      discrepancies: extractionResult.reconciliation.discrepancies,
+      reconciliationConventions: extractionResult.reconciliation.conventions,
+      toleranceApplied: extractionResult.reconciliation.toleranceApplied,
+      currencyPrecision: extractionResult.reconciliation.currencyPrecision,
+      sourceRoundingApplied: extractionResult.reconciliation.conventions?.sourceRoundingApplied ?? 0,
+    };
+
+    const verificationSummary: VerificationSummaryInfo = {
+      isVerified: gateResult.isVerified,
+      reconciliationVerified: gateResult.reconciliationVerified,
+      secondPassVerified: gateResult.secondPassVerified,
+      completenessVerified: gateResult.completenessVerified,
+      semanticVerified: gateResult.semanticVerified,
+      xlsxVerified: gateResult.xlsxVerified,
+      verificationGateStatus: gateResult.isVerified ? 'PASSED' : 'FAILED',
+      gateFailureReasons: gateResult.gateFailureReasons,
+      discrepancies: extractionResult.reconciliation.discrepancies,
+    };
+
+    const baseName = validatedFile.originalFilename.replace(/\.[^/.]+$/, '').trim() || 'financial_document';
+    const generatedXlsxFilename = `${baseName}_financial_report.xlsx`;
+
+    const xlsxSummary: XlsxSummaryInfo = {
+      generatedXlsxFilename,
+      xlsxValid: xlsxVerification.isValid,
+      sheetCount: xlsxVerification.sheetCount,
+      sheetNames: xlsxVerification.sheetNames,
+      totalRowCount: xlsxVerification.totalRows,
+      totalColumnCount: xlsxVerification.totalColumns,
+      formulaCount: xlsxVerification.formulaCount,
+      workbookErrors: xlsxVerification.errors,
+      worksheetValidation: xlsxVerification.sheets,
+      summarySheetPresent: xlsxVerification.sheetNames.includes('Document Summary'),
+      lineItemsSheetPresent: xlsxVerification.sheetNames.includes('Line Items'),
+      auditSheetPresent: xlsxVerification.sheetNames.includes('Reconciliation & Audit'),
+    };
+
+    const summary: ConversionSummary = {
+      document: documentSummary,
+      financial: financialSummary,
+      verification: verificationSummary,
+      xlsx: xlsxSummary,
+    };
+
+    conversionSummarySchema.parse(summary);
+
     return {
       success: true,
       documentId: validatedFile.documentId,
@@ -228,6 +334,7 @@ export class DocumentProcessingService {
       auditTrail,
       xlsxBase64: xlsxBuffer.toString('base64'),
       xlsxVerification,
+      summary,
     };
   }
 }

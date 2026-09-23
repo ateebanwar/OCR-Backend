@@ -1,19 +1,32 @@
 import ExcelJS from 'exceljs';
 import { SpreadsheetGenerationError } from '../errors/AppError';
 
+export interface WorksheetVerificationInfo {
+  name: string;
+  rowCount: number;
+  columnCount: number;
+  formulaCount: number;
+  isValid: boolean;
+}
+
 export interface XlsxVerificationReport {
   isValid: boolean;
+  sheetCount: number;
   sheetNames: string[];
   totalRows: number;
+  totalColumns: number;
   formulaCount: number;
   errors: string[];
+  sheets: WorksheetVerificationInfo[];
 }
 
 export async function verifyXlsxBuffer(buffer: Buffer): Promise<XlsxVerificationReport> {
   const errors: string[] = [];
   let totalRows = 0;
   let formulaCount = 0;
+  let maxColumns = 0;
   const sheetNames: string[] = [];
+  const sheets: WorksheetVerificationInfo[] = [];
 
   try {
     const workbook = new ExcelJS.Workbook();
@@ -23,12 +36,27 @@ export async function verifyXlsxBuffer(buffer: Buffer): Promise<XlsxVerification
       sheetNames.push(sheet.name);
       totalRows += sheet.rowCount;
 
+      let sheetFormulas = 0;
       sheet.eachRow(row => {
         row.eachCell(cell => {
           if (cell.type === ExcelJS.ValueType.Formula) {
+            sheetFormulas++;
             formulaCount++;
           }
         });
+      });
+
+      const colCount = sheet.columnCount;
+      if (colCount > maxColumns) {
+        maxColumns = colCount;
+      }
+
+      sheets.push({
+        name: sheet.name,
+        rowCount: sheet.rowCount,
+        columnCount: colCount,
+        formulaCount: sheetFormulas,
+        isValid: sheet.rowCount > 0,
       });
     });
 
@@ -49,10 +77,13 @@ export async function verifyXlsxBuffer(buffer: Buffer): Promise<XlsxVerification
 
     return {
       isValid,
+      sheetCount: sheetNames.length,
       sheetNames,
       totalRows,
+      totalColumns: maxColumns,
       formulaCount,
       errors,
+      sheets,
     };
   } catch (err: unknown) {
     throw new SpreadsheetGenerationError(

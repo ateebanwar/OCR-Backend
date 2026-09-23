@@ -245,8 +245,50 @@ async function main() {
       // Verify XLSX
       console.log('\n    --- SPREADSHEET (XLSX) AUDIT ---');
       console.log('    XLSX Valid:          ', result.xlsxVerification.isValid);
+      console.log('    Sheet Count:         ', result.xlsxVerification.sheetCount);
       console.log('    Sheets:              ', result.xlsxVerification.sheetNames);
+      console.log('    Total Rows:          ', result.xlsxVerification.totalRows);
+      console.log('    Total Columns (max): ', result.xlsxVerification.totalColumns);
       console.log('    Formulas Generated:  ', result.xlsxVerification.formulaCount);
+
+      // Verify Frontend Summary Contract
+      if (result.summary) {
+        console.log('\n    --- FRONTEND CONTRACT SUMMARY AUDIT ---');
+        console.log('    [Document Summary]:', JSON.stringify({
+          sourceFilename: result.summary.document.sourceFilename,
+          documentType: result.summary.document.documentType,
+          invoiceNumber: result.summary.document.invoiceNumber,
+          pages: result.summary.document.totalPdfPages,
+          lineItems: result.summary.document.extractedLineItemCount,
+          isFullyCovered: result.summary.document.isFullyCovered,
+        }));
+        console.log('    [Financial Summary]:', JSON.stringify({
+          currency: result.summary.financial.currency,
+          subtotal: result.summary.financial.subtotal,
+          tax: result.summary.financial.taxTotal,
+          grandTotal: result.summary.financial.grandTotal,
+          reconStatus: result.summary.financial.overallReconciliationStatus,
+          tolerance: result.summary.financial.toleranceApplied,
+          variance: result.summary.financial.grandTotalVariance,
+        }));
+        console.log('    [Verification Summary]:', JSON.stringify({
+          isVerified: result.summary.verification.isVerified,
+          reconciliation: result.summary.verification.reconciliationVerified,
+          secondPass: result.summary.verification.secondPassVerified,
+          completeness: result.summary.verification.completenessVerified,
+          semantic: result.summary.verification.semanticVerified,
+          xlsx: result.summary.verification.xlsxVerified,
+          gateStatus: result.summary.verification.verificationGateStatus,
+        }));
+        console.log('    [Excel Summary]:', JSON.stringify({
+          filename: result.summary.xlsx.generatedXlsxFilename,
+          valid: result.summary.xlsx.xlsxValid,
+          sheets: result.summary.xlsx.sheetCount,
+          rows: result.summary.xlsx.totalRowCount,
+          columns: result.summary.xlsx.totalColumnCount,
+          formulas: result.summary.xlsx.formulaCount,
+        }));
+      }
     } catch (err) {
       console.error(`    [PIPELINE ERROR] for ${docSpec.name}:`, err.message);
     }

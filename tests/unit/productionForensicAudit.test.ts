@@ -394,10 +394,17 @@ describe('Production Forensic Audit & Telemetry Truthfulness Regression Suite', 
 
     const validXlsx: XlsxVerificationReport = {
       isValid: true,
+      sheetCount: 3,
       sheetNames: ['Document Summary', 'Line Items', 'Reconciliation & Audit'],
       totalRows: 20,
+      totalColumns: 10,
       formulaCount: 5,
       errors: [],
+      sheets: [
+        { name: 'Document Summary', rowCount: 10, columnCount: 4, formulaCount: 0, isValid: true },
+        { name: 'Line Items', rowCount: 5, columnCount: 10, formulaCount: 3, isValid: true },
+        { name: 'Reconciliation & Audit', rowCount: 5, columnCount: 6, formulaCount: 2, isValid: true },
+      ],
     };
 
     it('proves AI second-pass CANNOT override deterministic reconciliation mismatch', () => {
@@ -440,10 +447,15 @@ describe('Production Forensic Audit & Telemetry Truthfulness Regression Suite', 
     it('proves corrupt XLSX integrity prevents final verification', () => {
       const corruptXlsx: XlsxVerificationReport = {
         isValid: false,
+        sheetCount: 1,
         sheetNames: ['Document Summary'],
         totalRows: 1,
+        totalColumns: 2,
         formulaCount: 0,
         errors: ['Missing required worksheet: Line Items'],
+        sheets: [
+          { name: 'Document Summary', rowCount: 1, columnCount: 2, formulaCount: 0, isValid: true },
+        ],
       };
 
       const gate = evaluateFinalVerificationGate({
