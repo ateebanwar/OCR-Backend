@@ -156,6 +156,9 @@ export interface CorrectionRecord {
   originalField: string;
   originalValue: unknown;
   finalValue: unknown;
+  correctedValue?: unknown;
+  interpretation?: string;
+  discount?: number;
   reason: string;
   evidence: string[];
   resolved: boolean;
@@ -171,6 +174,9 @@ export const correctionRecordSchema = z.object({
   originalField: z.string().min(1),
   originalValue: z.unknown(),
   finalValue: z.unknown(),
+  correctedValue: z.unknown().optional(),
+  interpretation: z.string().optional(),
+  discount: z.number().optional(),
   reason: z.string().min(1),
   evidence: z.array(z.string()),
   resolved: z.boolean(),

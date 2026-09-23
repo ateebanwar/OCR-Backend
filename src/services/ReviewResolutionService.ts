@@ -202,6 +202,7 @@ export class ReviewResolutionService {
           if (item) {
             item.unitPrice = 0;
             item.discount = absVal;
+            item.lineSubtotal = -absVal;
             item.lineTotal = -absVal;
             if (canonicalDoc.totals.discountTotal === null || canonicalDoc.totals.discountTotal === 0) {
               canonicalDoc.totals.discountTotal = absVal;
@@ -222,6 +223,9 @@ export class ReviewResolutionService {
           originalField: issue.field,
           originalValue: originalVal,
           finalValue: 0,
+          correctedValue: 0,
+          interpretation: 'promotional discount',
+          discount: absVal,
           reason: 'User confirmed value represents a discount.',
           evidence: [`User selected DISCOUNT resolution for ${issue.field}`],
           resolved: true,

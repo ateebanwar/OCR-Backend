@@ -15,6 +15,9 @@ const DISCOUNT_KEYWORDS = [
   'discount',
   'promo',
   'promotional',
+  'promotional code',
+  'promo code',
+  'recurring discount',
   'coupon',
   'voucher',
   'rebate',
@@ -26,6 +29,10 @@ const DISCOUNT_KEYWORDS = [
   'markdown',
   'sale discount',
   'early bird',
+  'promotion',
+  'courtesy discount',
+  'loyalty discount',
+  'volume discount',
 ];
 
 const CREDIT_KEYWORDS = [
@@ -86,13 +93,14 @@ export class CorrectionEngine {
 
         if (matchedDiscountKw || matchedCreditKw || matchedRefundKw) {
           // Candidate hypothesis: Line item is a promotional discount / credit / refund
-          // Convert line item: unitPrice = 0, discount = absVal, lineTotal = -absVal
+          // Convert line item: unitPrice = 0, discount = absVal, lineSubtotal = -absVal, lineTotal = -absVal
           // And add discount to totals.discountTotal if not already populated
           const candidateData: RawFinancialExtraction = JSON.parse(JSON.stringify(data));
           const candItem = candidateData.lineItems[i];
           if (candItem) {
             candItem.unitPrice = 0;
             candItem.discount = absVal;
+            candItem.lineSubtotal = -absVal;
             candItem.lineTotal = -absVal;
 
             if (candidateData.totals.discountTotal === null || candidateData.totals.discountTotal === 0) {
@@ -102,11 +110,24 @@ export class CorrectionEngine {
             const candidateRecon = reconcileFinancialDocument(candidateData);
             const originalRecon = reconcileFinancialDocument(data);
 
-            // Evidence-based check: Does this candidate improve or achieve exact reconciliation?
-            if (
+            // Evidence-based check:
+            // 1. Exact or improved overall reconciliation
+            const isExactOrImproved =
               candidateRecon.isVerified ||
-              candidateRecon.discrepancies.length < originalRecon.discrepancies.length
-            ) {
+              candidateRecon.discrepancies.length < originalRecon.discrepancies.length;
+
+            // 2. Or explicit contextual evidence where the line item itself is verified with 0 variance,
+            // no new discrepancies are introduced anywhere in the document,
+            // and totals reconciliation (grand total and subtotal) is preserved or improved.
+            const lineItemMatches = candidateRecon.lineItems[i]?.isMatched ?? false;
+            const noNewDiscrepancies = candidateRecon.discrepancies.length <= originalRecon.discrepancies.length;
+            const totalsPreservedOrImproved =
+              Math.abs(candidateRecon.totals.grandTotalVariance) <= Math.abs(originalRecon.totals.grandTotalVariance) &&
+              Math.abs(candidateRecon.totals.subtotalVariance) <= Math.abs(originalRecon.totals.subtotalVariance);
+
+            const isContextuallyVerified = lineItemMatches && noNewDiscrepancies && totalsPreservedOrImproved;
+
+            if (isExactOrImproved || isContextuallyVerified) {
               // High-confidence auto-correction verified by deterministic reconciliation
               data.lineItems[i] = candItem;
               data.totals.discountTotal = candidateData.totals.discountTotal;
@@ -118,28 +139,31 @@ export class CorrectionEngine {
                 ? `credit keyword '${matchedCreditKw}'`
                 : `refund keyword '${matchedRefundKw}'`;
 
-            corrections.push({
-              issueId: `corr_auto_${Date.now()}_${i}`,
-              page: 1,
-              field: `lineItems[${i}].unitPrice`,
-              lineItemIndex: i,
-              originalField: `lineItems[${i}].unitPrice`,
-              originalValue: originalUnitPrice,
-              finalValue: 0,
-              reason: `Extracted negative unitPrice on line item '${item.description}' auto-corrected to line discount and document discountTotal based on ${matchedReason}.`,
-              evidence: [
-                `Line description: "${item.description}"`,
-                `Evidence keyword: "${matchedDiscountKw || matchedCreditKw || matchedRefundKw}"`,
-                `Mathematical reconciliation verified with 0 variance`,
-              ],
-              resolved: true,
-              timestamp: new Date().toISOString(),
-              source: 'AUTOMATIC_ENGINE',
-            });
-            continue;
+              corrections.push({
+                issueId: `corr_auto_${Date.now()}_${i}`,
+                page: 1,
+                field: `lineItems[${i}].unitPrice`,
+                lineItemIndex: i,
+                originalField: `lineItems[${i}].unitPrice`,
+                originalValue: originalUnitPrice,
+                finalValue: 0,
+                correctedValue: 0,
+                interpretation: matchedDiscountKw ? 'promotional discount' : matchedCreditKw ? 'credit' : 'refund',
+                discount: absVal,
+                reason: `Extracted negative unitPrice on line item '${item.description}' auto-corrected to line discount and document discountTotal based on ${matchedReason}.`,
+                evidence: [
+                  `Line description: "${item.description}"`,
+                  `Evidence keyword: "${matchedDiscountKw || matchedCreditKw || matchedRefundKw}"`,
+                  `Mathematical reconciliation verified with 0 variance`,
+                ],
+                resolved: true,
+                timestamp: new Date().toISOString(),
+                source: 'AUTOMATIC_ENGINE',
+              });
+              continue;
+            }
           }
         }
-      }
 
         // If not auto-corrected (no matching keyword OR math didn't balance):
         // Treat as AMBIGUOUS_VALUE requiring explicit user review
@@ -187,16 +211,27 @@ export class CorrectionEngine {
     // If reconciliation failed, create structured review issues for unresolved math discrepancies
     if (!reconciliation.isVerified) {
       reconciliation.discrepancies.forEach((disc, idx) => {
+        let discField = 'totals';
+        if (disc.toLowerCase().includes('balance due')) {
+          discField = 'balanceDue';
+        } else if (disc.toLowerCase().includes('grand total')) {
+          discField = 'grandTotal';
+        } else if (disc.toLowerCase().includes('subtotal')) {
+          discField = 'subtotal';
+        } else if (disc.toLowerCase().includes('tax')) {
+          discField = 'taxTotal';
+        }
+
         issues.push({
           id: `issue_recon_${Date.now()}_${idx}`,
           type: 'RECONCILIATION_WARNING',
           severity: 'ERROR',
           status: 'OPEN',
           page: 1,
-          field: 'totals',
+          field: discField,
           originalValue: disc,
           aiInterpretation: {
-            field: 'totals',
+            field: discField,
             value: disc,
           },
           message: disc,

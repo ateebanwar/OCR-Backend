@@ -1161,8 +1161,8 @@ describe('Correction & Review Workflow Engine', () => {
           lineItems: [
             {
               lineNumber: 1,
-              description: 'WordPress Hosting - Premium Add-On',
-              sku: 'HOST-WP-01',
+              description: 'Premium Membership - Monthly - yourdomain.com (06/23/2018 - 07/23/2018)',
+              sku: null,
               quantity: 1,
               unit: null,
               unitPrice: 50.0,
@@ -1174,7 +1174,7 @@ describe('Correction & Review Workflow Engine', () => {
             },
             {
               lineNumber: 2,
-              description: 'Promotional Discount - Spring Special',
+              description: 'Promotional Code: 25OFF - 25.00% Recurring Discount',
               sku: null,
               quantity: 1,
               unit: null,
@@ -1187,8 +1187,8 @@ describe('Correction & Review Workflow Engine', () => {
             },
           ],
           totals: {
-            subtotal: 50.0,
-            discountTotal: null,
+            subtotal: 37.5,
+            discountTotal: 12.5,
             taxTotal: 0,
             taxesBreakdown: null,
             shippingCharges: null,
@@ -1210,19 +1210,31 @@ describe('Correction & Review Workflow Engine', () => {
         'Downloadable-PDF-Invoices-Add-On-Samples.pdf'
       );
 
-      // A. Promotional -$12.50 must remain correctly interpreted as a discount
+      // A. Promotional -$12.50 must be automatically corrected as a discount
       expect(result.summary.corrections?.length).toBe(1);
+      expect(result.auditTrail.correctionCount).toBeGreaterThanOrEqual(1);
       expect(result.summary.corrections?.[0]?.source).toBe('AUTOMATIC_ENGINE');
+      expect(result.summary.corrections?.[0]?.field).toBe('lineItems[1].unitPrice');
+      expect(result.summary.corrections?.[0]?.originalValue).toBe(-12.5);
+      expect(result.summary.corrections?.[0]?.finalValue).toBe(0);
+      expect(result.summary.corrections?.[0]?.discount).toBe(12.5);
+      expect(result.summary.corrections?.[0]?.resolved).toBe(true);
       expect(result.summary.corrections?.[0]?.reason).toContain('promotional');
+
+      // B. Line items recalculated consistently
       expect(result.document.lineItems[1]?.unitPrice).toBe(0);
       expect(result.document.lineItems[1]?.discount).toBe(12.5);
+      expect(result.document.lineItems[1]?.lineSubtotal).toBe(-12.5);
+      expect(result.document.lineItems[1]?.lineTotal).toBe(-12.5);
       expect(result.document.totals.discountTotal).toBe(12.5);
 
-      // B. Subtotal/grand total should remain $37.50
+      // C. Subtotal/grand total should remain $37.50
+      expect(result.document.totals.subtotal).toBe(37.5);
       expect(result.document.totals.grandTotal).toBe(37.5);
+      expect(result.summary.financial.subtotal).toBe(37.5);
       expect(result.summary.financial.grandTotal).toBe(37.5);
 
-      // C. Extracted balanceDue $37.50 vs expected $0.00 must remain an unresolved discrepancy
+      // D. Extracted balanceDue $37.50 vs expected $0.00 must remain an unresolved discrepancy
       expect(result.reconciliation.isVerified).toBe(false);
       expect(result.reconciliation.overallStatus).toBe('DISCREPANCY');
       const balanceDueDiscrepancy = result.reconciliation.discrepancies.find((d) =>
@@ -1232,32 +1244,38 @@ describe('Correction & Review Workflow Engine', () => {
       expect(balanceDueDiscrepancy).toContain('Expected 0.00');
       expect(balanceDueDiscrepancy).toContain('37.50');
 
-      // D. The backend must NOT return DOCUMENT_PROCESSING_FAILED; it must return REVIEW_REQUIRED
+      // E. The backend must NOT return DOCUMENT_PROCESSING_FAILED; it must return REVIEW_REQUIRED
       expect(result.success).toBe(true);
       expect(result.summary.status).toBe('REVIEW_REQUIRED');
 
-      // E. XLSX must be generated if technically safe
+      // F. XLSX must be generated if technically safe
       expect(result.xlsxBase64).toBeDefined();
       expect(result.xlsxVerification.isValid).toBe(true);
 
-      // F. reviewToken must be generated
+      // G. reviewToken must be generated
       expect(result.summary.review?.required).toBe(true);
       expect(typeof result.summary.review?.reviewToken).toBe('string');
       expect(result.summary.review?.reviewToken?.length).toBeGreaterThan(20);
 
-      // G. reconciliation.isVerified must remain false
+      // H. reconciliation.isVerified must remain false
       expect(result.isVerified).toBe(false);
       expect(result.reconciliation.isVerified).toBe(false);
 
-      // H. The issue must be visible to the frontend
+      // I. The AMBIGUOUS_VALUE issue for the promotional discount must NOT remain open!
+      const ambiguousIssues = result.summary.issues?.filter((i) => i.type === 'AMBIGUOUS_VALUE') || [];
+      expect(ambiguousIssues.length).toBe(0);
+
+      // J. The remaining balanceDue issue should stay as REVIEW_REQUIRED with RECONCILIATION_WARNING
       const reconIssue = result.summary.issues?.find(
         (i) => i.type === 'RECONCILIATION_WARNING'
       );
       expect(reconIssue).toBeDefined();
+      expect(reconIssue?.field).toBe('balanceDue');
       expect(reconIssue?.status).toBe('OPEN');
+      expect(reconIssue?.resolved).toBe(false);
       expect(reconIssue?.message).toContain('Balance due discrepancy');
 
-      // I. No VERIFIED badge/status may be returned
+      // K. No VERIFIED badge/status may be returned
       expect(result.summary.status).not.toBe('VERIFIED');
       expect(result.summary.status).not.toBe('VERIFIED_WITH_CORRECTIONS');
 
@@ -1292,6 +1310,21 @@ describe('Correction & Review Workflow Engine', () => {
       expect(apiBody.data.summary.review.required).toBe(true);
       expect(apiBody.data.summary.review.reviewToken).toBeDefined();
       expect(apiBody.data.xlsxBase64).toBeDefined();
+
+      // Assert auto-correction and issues in API response
+      expect(apiBody.data.summary.corrections.length).toBe(1);
+      expect(apiBody.data.summary.corrections[0].originalValue).toBe(-12.5);
+      expect(apiBody.data.summary.corrections[0].finalValue).toBe(0);
+      expect(apiBody.data.summary.corrections[0].discount).toBe(12.5);
+      expect(apiBody.data.document.lineItems[1].unitPrice).toBe(0);
+      expect(apiBody.data.document.lineItems[1].discount).toBe(12.5);
+      expect(apiBody.data.document.lineItems[1].lineSubtotal).toBe(-12.5);
+      expect(apiBody.data.document.lineItems[1].lineTotal).toBe(-12.5);
+      expect(apiBody.data.summary.issues.some((i: any) => i.type === 'AMBIGUOUS_VALUE')).toBe(false);
+      const apiReconIssue = apiBody.data.summary.issues.find((i: any) => i.type === 'RECONCILIATION_WARNING');
+      expect(apiReconIssue).toBeDefined();
+      expect(apiReconIssue.field).toBe('balanceDue');
+      expect(apiReconIssue.status).toBe('OPEN');
 
       await app.close();
     });
