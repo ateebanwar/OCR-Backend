@@ -27,6 +27,14 @@ import {
   XlsxSummaryInfo,
   conversionSummarySchema,
 } from '../domain/summary';
+import { CorrectionEngine } from './CorrectionEngine';
+import { DocumentStatusCalculator } from './DocumentStatusCalculator';
+import { ReviewResolutionService } from './ReviewResolutionService';
+import { ReviewIssue, CorrectionRecord, ReviewState } from '../domain/review';
+
+export interface ProcessDocumentOptions {
+  allowReviewRequired?: boolean;
+}
 
 export interface DocumentProcessingResult {
   success: boolean;
@@ -45,17 +53,26 @@ export interface DocumentProcessingResult {
 export class DocumentProcessingService {
   private extractionService: ExtractionService;
   private verificationService: VerificationService;
+  private correctionEngine: CorrectionEngine;
+  private reviewResolutionService: ReviewResolutionService;
   private config: AppConfig;
 
   constructor(aiProvider: AIProvider, config: AppConfig) {
     this.config = config;
     this.extractionService = new ExtractionService(aiProvider, config);
     this.verificationService = new VerificationService(aiProvider, config);
+    this.correctionEngine = new CorrectionEngine();
+    this.reviewResolutionService = new ReviewResolutionService();
+  }
+
+  public getReviewResolutionService(): ReviewResolutionService {
+    return this.reviewResolutionService;
   }
 
   public async processDocument(
     rawBuffer: Buffer,
-    originalFilename: string
+    originalFilename: string,
+    options?: ProcessDocumentOptions
   ): Promise<DocumentProcessingResult> {
     const overallStartTime = Date.now();
     const stageDurations: StageDuration[] = [];
@@ -99,38 +116,45 @@ export class DocumentProcessingService {
     );
     recordStage('EXTRACTING', stageStart);
 
+    // Stage 4b: CORRECTION_ENGINE (Auto-correction & Issue Detection)
+    const correctionResult = this.correctionEngine.analyzeAndCorrect(extractionResult.data);
+    const finalData = correctionResult.data;
+    const finalReconciliation = correctionResult.reconciliation;
+    const corrections = correctionResult.corrections;
+    const issues = correctionResult.issues;
+
     // Coverage Tracking
     const estimatedPages = Math.max(
       complexity.estimatedPageCount,
-      extractionResult.data.pageCount || 1
+      finalData.pageCount || 1
     );
     const coverageTracker = new CoverageTracker(estimatedPages);
     coverageTracker.markAllProcessed();
     const coverage = coverageTracker.getCoverage();
 
     // Completeness Check (Type and layout aware)
-    const completeness = validateCompleteness(extractionResult.data, coverage);
+    const completeness = validateCompleteness(finalData, coverage);
 
     // Canonical Document Assembly
     const canonicalDoc: CanonicalFinancialDocument = {
       documentId: validatedFile.documentId,
       sourceFilename: validatedFile.originalFilename,
       documentHash,
-      documentType: extractionResult.data.documentType,
-      invoiceNumber: extractionResult.data.invoiceNumber,
-      documentNumber: extractionResult.data.documentNumber,
-      invoiceDate: extractionResult.data.invoiceDate,
-      dueDate: extractionResult.data.dueDate,
-      purchaseOrderNumber: extractionResult.data.purchaseOrderNumber,
-      referenceNumbers: extractionResult.data.referenceNumbers,
-      currency: extractionResult.data.currency,
-      language: extractionResult.data.language,
+      documentType: finalData.documentType,
+      invoiceNumber: finalData.invoiceNumber,
+      documentNumber: finalData.documentNumber,
+      invoiceDate: finalData.invoiceDate,
+      dueDate: finalData.dueDate,
+      purchaseOrderNumber: finalData.purchaseOrderNumber,
+      referenceNumbers: finalData.referenceNumbers,
+      currency: finalData.currency,
+      language: finalData.language,
       processingTimestamp: new Date().toISOString(),
-      vendor: extractionResult.data.vendor,
-      customer: extractionResult.data.customer,
-      lineItems: extractionResult.data.lineItems,
-      totals: extractionResult.data.totals,
-      payment: extractionResult.data.payment,
+      vendor: finalData.vendor,
+      customer: finalData.customer,
+      lineItems: finalData.lineItems,
+      totals: finalData.totals,
+      payment: finalData.payment,
       coverage,
     };
 
@@ -139,23 +163,26 @@ export class DocumentProcessingService {
     const secondPass = await this.verificationService.verifyExtraction(
       validatedFile.buffer,
       validatedFile.originalFilename,
-      extractionResult.data,
+      finalData,
       invocationTracker
     );
     recordStage('VERIFYING_SECOND_PASS', stageStart);
 
+    const hasAmbiguousIssues = issues.some((i) => i.type === 'AMBIGUOUS_VALUE');
+
     // Check for unresolvable financial discrepancies (Deterministic Reconciliation Authority)
-    if (!extractionResult.reconciliation.isVerified) {
+    // If math failed and there are NO ambiguous issues to review, fail immediately with DocumentProcessingError.
+    if (!finalReconciliation.isVerified && !hasAmbiguousIssues && !options?.allowReviewRequired) {
       recordStage('FAILED', stageStart);
       throw new DocumentProcessingError(
-        `Financial reconciliation failed with unresolved discrepancies: ${extractionResult.reconciliation.discrepancies.join(
+        `Financial reconciliation failed with unresolved discrepancies: ${finalReconciliation.discrepancies.join(
           '; '
         )}`,
         {
           documentId: validatedFile.documentId,
-          reconciliation: extractionResult.reconciliation,
-          discrepancies: extractionResult.reconciliation.discrepancies,
-          auditNotes: extractionResult.reconciliation.auditNotes,
+          reconciliation: finalReconciliation,
+          discrepancies: finalReconciliation.discrepancies,
+          auditNotes: finalReconciliation.auditNotes,
         }
       );
     }
@@ -164,7 +191,7 @@ export class DocumentProcessingService {
     stageStart = Date.now();
     const xlsxBuffer = await generateFinancialWorkbook(
       canonicalDoc,
-      extractionResult.reconciliation,
+      finalReconciliation,
       { includeAuditSheet: true }
     );
     recordStage('GENERATING_XLSX', stageStart);
@@ -184,7 +211,7 @@ export class DocumentProcessingService {
 
     // Final Verification Gate: Strict multi-pillar aggregation AFTER XLSX verification
     const gateResult = evaluateFinalVerificationGate({
-      reconciliation: extractionResult.reconciliation,
+      reconciliation: finalReconciliation,
       secondPass,
       completeness,
       semanticValidation: extractionResult.semanticResult,
@@ -203,7 +230,7 @@ export class DocumentProcessingService {
 
     const retryCount = extractionResult.retriesAttempted;
     const escalationCount = extractionResult.escalationCount;
-    const correctionCount = extractionResult.correctionCount;
+    const correctionCount = extractionResult.correctionCount + corrections.length;
     const fallbackUsed = telemetry.fallbackUsed || extractionResult.fallbackUsed;
     const fallbackModel = telemetry.fallbackModel || extractionResult.fallbackModel;
 
@@ -224,6 +251,36 @@ export class DocumentProcessingService {
       modelsUsed,
       modelInvocations: telemetry.allInvocations,
       verificationGate: gateResult,
+    };
+
+    // Calculate Authoritative Document Status
+    const documentStatus = DocumentStatusCalculator.calculateStatus({
+      isVerified: gateResult.isVerified,
+      reconciliationVerified: finalReconciliation.isVerified,
+      issues,
+      corrections,
+    });
+
+    const openIssues = issues.filter((i) => i.status === 'OPEN' && !i.resolved);
+    const isReviewRequired = documentStatus === 'REVIEW_REQUIRED';
+
+    let reviewToken: string | undefined;
+    if (isReviewRequired) {
+      reviewToken = this.reviewResolutionService.createReviewToken({
+        documentId: validatedFile.documentId,
+        documentHash,
+        sourceFilename: validatedFile.originalFilename,
+        canonicalDoc,
+        issues,
+        corrections,
+        auditTrail,
+      });
+    }
+
+    const reviewState: ReviewState = {
+      required: isReviewRequired,
+      openIssueCount: openIssues.length,
+      reviewToken,
     };
 
     // Assemble Authoritative Post-Conversion Summaries for Frontend
@@ -263,25 +320,25 @@ export class DocumentProcessingService {
       paidAmount: canonicalDoc.totals.paidAmount,
       balanceDue: canonicalDoc.totals.balanceDue,
 
-      overallReconciliationStatus: extractionResult.reconciliation.overallStatus,
-      reconciliationVerificationStatus: extractionResult.reconciliation.isVerified,
-      calculatedSubtotal: extractionResult.reconciliation.totals.calculatedSubtotal,
-      extractedSubtotal: extractionResult.reconciliation.totals.extractedSubtotal,
-      subtotalVariance: extractionResult.reconciliation.totals.subtotalVariance,
-      calculatedTaxTotal: extractionResult.reconciliation.totals.calculatedTaxTotal,
-      extractedTaxTotal: extractionResult.reconciliation.totals.extractedTaxTotal,
-      taxVariance: extractionResult.reconciliation.totals.taxVariance,
-      calculatedGrandTotal: extractionResult.reconciliation.totals.calculatedGrandTotal,
-      extractedGrandTotal: extractionResult.reconciliation.totals.extractedGrandTotal,
-      grandTotalVariance: extractionResult.reconciliation.totals.grandTotalVariance,
-      calculatedBalanceDue: extractionResult.reconciliation.totals.calculatedBalanceDue,
-      extractedBalanceDue: extractionResult.reconciliation.totals.extractedBalanceDue,
-      balanceDueVariance: extractionResult.reconciliation.totals.balanceDueVariance,
-      discrepancies: extractionResult.reconciliation.discrepancies,
-      reconciliationConventions: extractionResult.reconciliation.conventions,
-      toleranceApplied: extractionResult.reconciliation.toleranceApplied,
-      currencyPrecision: extractionResult.reconciliation.currencyPrecision,
-      sourceRoundingApplied: extractionResult.reconciliation.conventions?.sourceRoundingApplied ?? 0,
+      overallReconciliationStatus: finalReconciliation.overallStatus,
+      reconciliationVerificationStatus: finalReconciliation.isVerified,
+      calculatedSubtotal: finalReconciliation.totals.calculatedSubtotal,
+      extractedSubtotal: finalReconciliation.totals.extractedSubtotal,
+      subtotalVariance: finalReconciliation.totals.subtotalVariance,
+      calculatedTaxTotal: finalReconciliation.totals.calculatedTaxTotal,
+      extractedTaxTotal: finalReconciliation.totals.extractedTaxTotal,
+      taxVariance: finalReconciliation.totals.taxVariance,
+      calculatedGrandTotal: finalReconciliation.totals.calculatedGrandTotal,
+      extractedGrandTotal: finalReconciliation.totals.extractedGrandTotal,
+      grandTotalVariance: finalReconciliation.totals.grandTotalVariance,
+      calculatedBalanceDue: finalReconciliation.totals.calculatedBalanceDue,
+      extractedBalanceDue: finalReconciliation.totals.extractedBalanceDue,
+      balanceDueVariance: finalReconciliation.totals.balanceDueVariance,
+      discrepancies: finalReconciliation.discrepancies,
+      reconciliationConventions: finalReconciliation.conventions,
+      toleranceApplied: finalReconciliation.toleranceApplied,
+      currencyPrecision: finalReconciliation.currencyPrecision,
+      sourceRoundingApplied: finalReconciliation.conventions?.sourceRoundingApplied ?? 0,
     };
 
     const verificationSummary: VerificationSummaryInfo = {
@@ -293,7 +350,7 @@ export class DocumentProcessingService {
       xlsxVerified: gateResult.xlsxVerified,
       verificationGateStatus: gateResult.isVerified ? 'PASSED' : 'FAILED',
       gateFailureReasons: gateResult.gateFailureReasons,
-      discrepancies: extractionResult.reconciliation.discrepancies,
+      discrepancies: finalReconciliation.discrepancies,
     };
 
     const baseName = validatedFile.originalFilename.replace(/\.[^/.]+$/, '').trim() || 'financial_document';
@@ -319,6 +376,10 @@ export class DocumentProcessingService {
       financial: financialSummary,
       verification: verificationSummary,
       xlsx: xlsxSummary,
+      status: documentStatus,
+      issues,
+      corrections,
+      review: reviewState,
     };
 
     conversionSummarySchema.parse(summary);
@@ -330,7 +391,7 @@ export class DocumentProcessingService {
       documentHash,
       isVerified: gateResult.isVerified,
       document: canonicalDoc,
-      reconciliation: extractionResult.reconciliation,
+      reconciliation: finalReconciliation,
       auditTrail,
       xlsxBase64: xlsxBuffer.toString('base64'),
       xlsxVerification,

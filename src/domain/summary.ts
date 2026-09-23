@@ -16,6 +16,16 @@ import { z } from 'zod';
 import { DocumentType } from './financial';
 import { ReconciliationStatus, CalculationConventions } from './processing';
 import { WorksheetVerificationInfo } from '../spreadsheet/xlsxVerifier';
+import {
+  DocumentStatus,
+  documentStatusSchema,
+  ReviewIssue,
+  reviewIssueSchema,
+  CorrectionRecord,
+  correctionRecordSchema,
+  ReviewState,
+  reviewStateSchema,
+} from './review';
 
 // ==============================================================================
 // 1. DOCUMENT SUMMARY
@@ -248,6 +258,10 @@ export interface ConversionSummary {
   financial: FinancialSummaryInfo;
   verification: VerificationSummaryInfo;
   xlsx: XlsxSummaryInfo;
+  status?: DocumentStatus;
+  issues?: ReviewIssue[];
+  corrections?: CorrectionRecord[];
+  review?: ReviewState;
 }
 
 export const conversionSummarySchema = z.object({
@@ -255,4 +269,8 @@ export const conversionSummarySchema = z.object({
   financial: financialSummarySchema,
   verification: verificationSummarySchema,
   xlsx: xlsxSummarySchema,
+  status: documentStatusSchema.optional(),
+  issues: z.array(reviewIssueSchema).optional(),
+  corrections: z.array(correctionRecordSchema).optional(),
+  review: reviewStateSchema.optional(),
 });

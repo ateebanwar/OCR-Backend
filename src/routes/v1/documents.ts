@@ -30,6 +30,27 @@ const documentChatSchema = z.object({
   model: z.string().optional(),
 });
 
+const reviewResolutionSchema = z.object({
+  reviewToken: z.string().min(1, 'reviewToken is required'),
+  resolutions: z
+    .array(
+      z.object({
+        issueId: z.string().min(1, 'issueId is required'),
+        userDecision: z.enum([
+          'DISCOUNT',
+          'CREDIT',
+          'REFUND',
+          'ADJUSTMENT',
+          'OTHER',
+          'KEEP_AS_IS',
+        ]),
+        customMeaning: z.string().max(500).nullable().optional(),
+        customValue: z.unknown().optional(),
+      })
+    )
+    .min(1, 'At least one resolution is required'),
+});
+
 export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
   fastify: FastifyInstance,
   options
@@ -67,6 +88,18 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
       return reply.status(200).send(formatSuccessResponse(result, request.requestId));
     }
   );
+
+  // POST /api/v1/documents/review
+  fastify.post('/documents/review', async (request, reply) => {
+    const parseResult = reviewResolutionSchema.safeParse(request.body);
+    if (!parseResult.success) {
+      throw new ValidationError('Invalid document review payload.', parseResult.error.errors);
+    }
+
+    const reviewService = processingService.getReviewResolutionService();
+    const result = await reviewService.resolveReview(parseResult.data);
+    return reply.status(200).send(formatSuccessResponse(result, request.requestId));
+  });
 
   // POST /api/v1/documents/download
   // Allows downloading the verified Excel workbook directly as a binary file
