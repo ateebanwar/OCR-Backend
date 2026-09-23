@@ -183,13 +183,8 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     blobReadWriteToken: (() => {
       const rawToken = raw.BLOB_READ_WRITE_TOKEN?.trim();
       if (!rawToken) return undefined;
-      let t = rawToken;
-      if (t.startsWith('BLOB_READ_WRITE_TOKEN=')) {
-        t = t.slice('BLOB_READ_WRITE_TOKEN='.length).trim();
-      }
-      if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
-        t = t.slice(1, -1).trim();
-      }
+      let t = rawToken.replace(/^BLOB_READ_WRITE_TOKEN\s*=\s*/i, '').trim();
+      t = t.replace(/^["']|["']$/g, '').trim();
       return t.length > 0 ? t : undefined;
     })(),
   };

@@ -45,22 +45,25 @@ export class BlobStorageService {
     };
   }
 
+  /**
+   * Sanitizes the blob token, stripping any accidental 'BLOB_READ_WRITE_TOKEN=' prefix,
+   * whitespace, newlines, and surrounding double or single quotes.
+   */
+  public static cleanToken(rawToken?: string): string | undefined {
+    if (!rawToken) return undefined;
+    let t = rawToken.trim();
+    t = t.replace(/^BLOB_READ_WRITE_TOKEN\s*=\s*/i, '').trim();
+    t = t.replace(/^["']|["']$/g, '').trim();
+    return t.length > 0 ? t : undefined;
+  }
+
   private getToken(): string {
-    let token = this.config.blobReadWriteToken || process.env.BLOB_READ_WRITE_TOKEN;
-    if (token) {
-      let t = token.trim();
-      if (t.startsWith('BLOB_READ_WRITE_TOKEN=')) {
-        t = t.slice('BLOB_READ_WRITE_TOKEN='.length).trim();
-      }
-      if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
-        t = t.slice(1, -1).trim();
-      }
-      token = t;
-    }
-    if (!token || !token.trim()) {
+    const raw = this.config.blobReadWriteToken || process.env.BLOB_READ_WRITE_TOKEN;
+    const token = BlobStorageService.cleanToken(raw);
+    if (!token) {
       throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: BLOB_READ_WRITE_TOKEN is not configured.');
     }
-    return token.trim();
+    return token;
   }
 
   /**
