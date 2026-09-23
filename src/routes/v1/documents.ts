@@ -7,6 +7,7 @@ import { FileValidationError, ValidationError } from '../../errors/AppError';
 import { AppConfig } from '../../config/env';
 import { AIProvider } from '../../providers/ai/AIProvider';
 import { createConcurrencyGuard } from '../../middleware/concurrencyGuard';
+import { createAuthGuard } from '../../middleware/authGuard';
 import { sanitizeFilename } from '../../security/fileValidator';
 
 export interface DocumentRouteOptions {
@@ -59,11 +60,12 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
   const processingService = new DocumentProcessingService(aiProvider, config);
   const chatService = new ChatService(aiProvider, config);
   const concurrencyGuard = createConcurrencyGuard(config);
+  const authGuard = createAuthGuard(config);
 
   // POST /api/v1/documents/process
   fastify.post(
     '/documents/process',
-    { preHandler: concurrencyGuard },
+    { preHandler: [authGuard, concurrencyGuard] },
     async (request, reply) => {
       if (!request.isMultipart()) {
         throw new FileValidationError('Invalid content-type. Expected multipart/form-data.');
@@ -90,7 +92,7 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
   );
 
   // POST /api/v1/documents/review
-  fastify.post('/documents/review', async (request, reply) => {
+  fastify.post('/documents/review', { preHandler: authGuard }, async (request, reply) => {
     const parseResult = reviewResolutionSchema.safeParse(request.body);
     if (!parseResult.success) {
       throw new ValidationError('Invalid document review payload.', parseResult.error.errors);
@@ -103,7 +105,7 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
 
   // POST /api/v1/documents/download
   // Allows downloading the verified Excel workbook directly as a binary file
-  fastify.post('/documents/download', async (request, reply) => {
+  fastify.post('/documents/download', { preHandler: authGuard }, async (request, reply) => {
     const parseResult = downloadBodySchema.safeParse(request.body);
     if (!parseResult.success) {
       throw new ValidationError('Invalid download request payload.', parseResult.error.errors);
@@ -123,7 +125,7 @@ export const documentRoutes: FastifyPluginAsync<DocumentRouteOptions> = async (
   });
 
   // POST /api/v1/documents/chat
-  fastify.post('/documents/chat', async (request, reply) => {
+  fastify.post('/documents/chat', { preHandler: authGuard }, async (request, reply) => {
     const parseResult = documentChatSchema.safeParse(request.body);
     if (!parseResult.success) {
       throw new ValidationError('Invalid document chat payload.', parseResult.error.errors);

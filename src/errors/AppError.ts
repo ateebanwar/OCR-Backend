@@ -68,3 +68,14 @@ export class DocumentProcessingError extends AppError {
   public readonly statusCode = 422;
   public readonly code = 'DOCUMENT_PROCESSING_FAILED';
 }
+
+export class AuthenticationError extends AppError {
+  public readonly statusCode = 401;
+  public readonly code: string;
+
+  constructor(message: string = 'Authentication required.', code: string = 'AUTHENTICATION_REQUIRED', details?: unknown) {
+    super(message, details);
+    this.code = code;
+  }
+}
+

@@ -5,6 +5,7 @@ import { formatSuccessResponse } from '../../api/response';
 import { ValidationError } from '../../errors/AppError';
 import { AppConfig } from '../../config/env';
 import { AIProvider } from '../../providers/ai/AIProvider';
+import { createAuthGuard } from '../../middleware/authGuard';
 
 export interface ChatRouteOptions {
   config: AppConfig;
@@ -34,8 +35,9 @@ export const chatRoutes: FastifyPluginAsync<ChatRouteOptions> = async (
 ) => {
   const { config, aiProvider } = options;
   const chatService = new ChatService(aiProvider, config);
+  const authGuard = createAuthGuard(config);
 
-  fastify.post('/chat', async (request, reply) => {
+  fastify.post('/chat', { preHandler: authGuard }, async (request, reply) => {
     const parseResult = chatBodySchema.safeParse(request.body);
     if (!parseResult.success) {
       throw new ValidationError('Invalid chat request payload.', parseResult.error.errors);

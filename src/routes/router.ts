@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { healthRoutes } from './v1/health';
 import { documentRoutes } from './v1/documents';
 import { chatRoutes } from './v1/chat';
+import { accessRoutes } from './v1/access';
 import { AppConfig } from '../config/env';
 import { AIProvider } from '../providers/ai/AIProvider';
 
@@ -30,6 +31,7 @@ export const apiRouter: FastifyPluginAsync<ApiRouterOptions> = async (
   await fastify.register(
     async (v1) => {
       await v1.register(healthRoutes, { config });
+      await v1.register(accessRoutes, { config, prefix: '/access' });
       await v1.register(documentRoutes, { config, aiProvider });
       await v1.register(chatRoutes, { config, aiProvider });
     },

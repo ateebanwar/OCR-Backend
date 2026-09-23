@@ -10,7 +10,7 @@ export function createCorsOptions(config: AppConfig): FastifyCorsOptions {
         return;
       }
 
-      if (config.allowedOrigins.includes(origin)) {
+      if (config.allowedOrigins.includes(origin) || (config.frontendOrigin && origin === config.frontendOrigin)) {
         cb(null, true);
         return;
       }

@@ -45,6 +45,20 @@ const envSchema = z.object({
   
   MAX_EXTRACTION_RETRIES: z.coerce.number().min(0).max(5).default(2),
   MAX_ESCALATION_LEVELS: z.coerce.number().min(0).max(3).default(2),
+
+  REQUIRE_PASSWORD: z.preprocess((val) => {
+    if (typeof val === 'string') {
+      return val.trim().toLowerCase() === 'true';
+    }
+    return Boolean(val);
+  }, z.boolean()).default(false),
+  ACCESS_PASSWORD: z.string().optional().default(''),
+  ACCESS_TOKEN_SECRET: z.string().optional().default(''),
+  ACCESS_TOKEN_TTL: z.string().default('30m'),
+  ACCESS_AUTH_VERSION: z.string().default('1'),
+  ACCESS_RATE_LIMIT_MAX: z.coerce.number().positive().default(5),
+  ACCESS_RATE_LIMIT_WINDOW_MS: z.coerce.number().positive().default(60000),
+  FRONTEND_ORIGIN: z.string().optional(),
 });
 
 export type RawConfig = z.infer<typeof envSchema>;
@@ -75,6 +89,14 @@ export interface AppConfig {
   maxExtractionRetries: number;
   maxEscalationLevels: number;
   isProduction: boolean;
+  requirePassword: boolean;
+  accessPassword?: string;
+  accessTokenSecret: string;
+  accessTokenTtl: string;
+  accessAuthVersion: string;
+  accessRateLimitMax: number;
+  accessRateLimitWindowMs: number;
+  frontendOrigin?: string;
 }
 
 let cachedConfig: AppConfig | null = null;
@@ -94,10 +116,27 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     console.warn('[SECURITY WARNING] GEMINI_API_KEY is not configured or is a placeholder in production.');
   }
 
+  // Access gate validation: If password is required, ACCESS_PASSWORD must be configured
+  if (raw.REQUIRE_PASSWORD) {
+    if (!raw.ACCESS_PASSWORD || !raw.ACCESS_PASSWORD.trim()) {
+      throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: ACCESS_PASSWORD is required when REQUIRE_PASSWORD=true.');
+    }
+    if (raw.NODE_ENV === 'production' && (!raw.ACCESS_TOKEN_SECRET || !raw.ACCESS_TOKEN_SECRET.trim())) {
+      throw new ConfigurationError('SERVER_CONFIGURATION_ERROR: ACCESS_TOKEN_SECRET must be configured in production when REQUIRE_PASSWORD=true.');
+    }
+  }
+
   const allowedOrigins = raw.ALLOWED_ORIGINS
     .split(',')
     .map(s => s.trim())
     .filter(s => s.length > 0);
+
+  if (raw.FRONTEND_ORIGIN && raw.FRONTEND_ORIGIN.trim()) {
+    const origin = raw.FRONTEND_ORIGIN.trim();
+    if (!allowedOrigins.includes(origin)) {
+      allowedOrigins.push(origin);
+    }
+  }
 
   const config: AppConfig = {
     nodeEnv: raw.NODE_ENV,
@@ -125,6 +164,16 @@ export function loadConfig(customEnv: Record<string, string | undefined> = proce
     maxExtractionRetries: raw.MAX_EXTRACTION_RETRIES,
     maxEscalationLevels: raw.MAX_ESCALATION_LEVELS,
     isProduction: raw.NODE_ENV === 'production',
+    requirePassword: raw.REQUIRE_PASSWORD,
+    accessPassword: raw.ACCESS_PASSWORD && raw.ACCESS_PASSWORD.trim() ? raw.ACCESS_PASSWORD.trim() : undefined,
+    accessTokenSecret: raw.ACCESS_TOKEN_SECRET && raw.ACCESS_TOKEN_SECRET.trim()
+      ? raw.ACCESS_TOKEN_SECRET.trim()
+      : 'fallback_dev_access_token_secret_do_not_use_in_production',
+    accessTokenTtl: raw.ACCESS_TOKEN_TTL.trim() || '30m',
+    accessAuthVersion: raw.ACCESS_AUTH_VERSION.trim() || '1',
+    accessRateLimitMax: raw.ACCESS_RATE_LIMIT_MAX,
+    accessRateLimitWindowMs: raw.ACCESS_RATE_LIMIT_WINDOW_MS,
+    frontendOrigin: raw.FRONTEND_ORIGIN?.trim(),
   };
 
   // Startup validation: Ensure model names are non-empty
