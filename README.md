@@ -45,7 +45,7 @@ Built on **Node.js 24**, **TypeScript (Strict)**, **Fastify**, **Zod**, **Google
 | Threat Category | Mechanism | Implementation |
 | :--- | :--- | :--- |
 | **Formula Injection (CWE-1236)** | Value Sanitization | Leading triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) are escaped with a single quote `'` in `xlsxGenerator.ts`. |
-| **Indirect Prompt Injection (CWE-1021)** | Untrusted Data Boundary | Explicit system prompt boundaries treating all document text as inert data; filename sanitization. |
+| **Indirect Prompt Injection** | Untrusted Data Boundary | Explicit system prompt boundaries treating all document text as inert data; filename sanitization. |
 | **PDF Decompression Bombs & Resource Exhaustion** | Ingestion Limits | Size guard (`MAX_UPLOAD_SIZE_MB`), page limit (`MAX_PDF_PAGES`), and magic bytes (`%PDF-`). |
 | **Encrypted / Password-Locked PDFs** | Early Detection | Immediate rejection of `/Encrypt` dictionaries with 422 before invoking AI providers. |
 | **Request Flooding & DoS** | Rate Limiting | `@fastify/rate-limit` enforces sliding-window rate limits returning 429 envelopes. |
@@ -453,7 +453,7 @@ registerAIProvider('claude', (config) => new ClaudeProvider(config));
 ## 13. Security Threat Model & Defenses
 
 - **No Key Exposure**: The browser never sees `GEMINI_API_KEY`.
-- **Magic Bytes Validation**: File extensions and client MIME types are never trusted; the first 4 bytes are strictly checked for `%PDF-` (`0x25, 0x50, 0x44, 0x46`).
+- **Magic Bytes Validation**: File extensions and client MIME types are never trusted; the first 5 bytes are strictly checked for `%PDF-` (`0x25, 0x50, 0x44, 0x46`).
 - **Encrypted Document Rejection**: Encrypted PDFs are rejected early before calling AI models.
 - **Formula Injection Defense**: Escapes leading dangerous characters with single quotes `'` to prevent DDE/code execution in Excel.
 - **Secret Scrubbing**: Logs and error responses automatically scrub tokens, keys, passwords, and raw binary buffers.
