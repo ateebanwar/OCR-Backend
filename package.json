@@ -23,8 +23,8 @@
     "xlsx",
     "reconciliation"
   ],
-  "author": "",
-  "license": "UNLICENSED",
+  "author": "Ateeb Anwar",
+  "license": "MIT",
   "dependencies": {
     "@fastify/cors": "^10.0.1",
     "@fastify/helmet": "^13.1.1",
