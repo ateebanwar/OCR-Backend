@@ -14,17 +14,19 @@ import { getModelHierarchy } from '../config/models';
  */
 
 export function estimatePageCount(buffer: Buffer): number {
-  const content = buffer.toString('latin1');
-
-  const matches = content.match(/\/Type\s*\/Page\b/g);
-
-  if (matches && matches.length > 0) {
-    return matches.length;
+  if (!buffer || buffer.length === 0) {
+    return 0;
   }
 
-  const countMatches = [
-    ...content.matchAll(/\/Count\s+(\d+)\b/g),
-  ];
+  const content = buffer.toString('latin1');
+
+  const pageMatches = content.match(/\/Type\s*\/Page\b/g);
+
+  if (pageMatches && pageMatches.length > 0) {
+    return pageMatches.length;
+  }
+
+  const countMatches = [...content.matchAll(/\/Count\s+(\d+)\b/g)];
 
   const counts = countMatches
     .map((match) => Number(match[1]))
@@ -34,7 +36,6 @@ export function estimatePageCount(buffer: Buffer): number {
     return Math.max(...counts);
   }
 
-  // Unknown page count: return 0 instead of falsely claiming 1 page.
   return 0;
 }
 export function detectImageDensity(buffer: Buffer): number {
