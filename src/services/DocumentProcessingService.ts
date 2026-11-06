@@ -89,12 +89,12 @@ export class DocumentProcessingService {
 
     // Stage 1: VALIDATING_FILE
     let stageStart = Date.now();
-    const validatedFile = validatePdfBuffer(
-      rawBuffer,
-      originalFilename,
-      this.config.maxUploadSizeBytes,
-      this.config.maxPdfPages
-    );
+    const validatedFile = await validatePdfBuffer(
+  rawBuffer,
+  originalFilename,
+  this.config.maxUploadSizeBytes,
+  this.config.maxPdfPages
+);
     recordStage('VALIDATING_FILE', stageStart);
 
     // Stage 2: DOCUMENT_HASHED
