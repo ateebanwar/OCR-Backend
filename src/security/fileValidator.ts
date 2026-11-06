@@ -164,7 +164,7 @@ export async function validatePdfBuffer(
 
   if (headerIndex < 0 || headerIndex > PDF_HEADER_MAX_OFFSET) {
     throw new UnsupportedDocumentError(
-      'Invalid PDF signature. The PDF header was not found within the first 1024 bytes.'
+      'Invalid PDF signature: PDF magic bytes (%PDF-) were not found within the first 1024 bytes.'
     );
   }
 

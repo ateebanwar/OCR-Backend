@@ -5,14 +5,14 @@ import { MockAIProvider } from '../mocks/MockAIProvider';
 import { loadConfig } from '../../src/config/env';
 import { ProviderError, ProviderTimeoutError } from '../../src/errors/AppError';
 import ExcelJS from 'exceljs';
+import fs from 'node:fs';
+import path from 'node:path';
 
 describe('Comprehensive End-to-End Audited Backend Verification', () => {
   let app: FastifyInstance;
   let mockAi: MockAIProvider;
 
-  const validPdfContent = Buffer.from(
-    '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF'
-  );
+  const validPdfContent = fs.readFileSync(path.resolve('tests/fixtures/documents/test01_simple_invoice.pdf'));
 
   const createMultipartPayload = (
     filename: string,
@@ -35,7 +35,7 @@ describe('Comprehensive End-to-End Audited Backend Verification', () => {
       AI_PROVIDER: 'mock',
       PORT: '3001',
       MAX_UPLOAD_SIZE_MB: '1', // 1MB for tight limit testing
-      MAX_PDF_PAGES: '5',
+      MAX_PDF_PAGES: '1',
     });
     mockAi = new MockAIProvider();
     app = await buildApp({ config, aiProvider: mockAi });
@@ -183,9 +183,7 @@ describe('Comprehensive End-to-End Audited Backend Verification', () => {
   });
 
   it('Rejection: rejects encrypted / password-protected PDF', async () => {
-    const encryptedPdf = Buffer.from(
-      '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\ntrailer\n<< /Encrypt 4 0 R >>\n%%EOF'
-    );
+    const encryptedPdf = fs.readFileSync(path.resolve('tests/fixtures/documents/test16_encrypted.pdf'));
     const { payload, contentType } = createMultipartPayload('encrypted.pdf', encryptedPdf);
 
     const res = await app.inject({
@@ -202,12 +200,8 @@ describe('Comprehensive End-to-End Audited Backend Verification', () => {
   });
 
   it('Rejection: rejects PDF exceeding configured page count limit', async () => {
-    // Generate PDF with page count exceeding maxPdfPages (configured to 5)
-    let pageNodes = '';
-    for (let i = 0; i < 10; i++) {
-      pageNodes += `/Type /Page\n`;
-    }
-    const oversizedPagePdf = Buffer.from(`%PDF-1.4\n${pageNodes}%%EOF`);
+    // The app is configured for one page; this real fixture contains two pages.
+    const oversizedPagePdf = fs.readFileSync(path.resolve('tests/fixtures/documents/test02_multipage_invoice.pdf'));
     const { payload, contentType } = createMultipartPayload('huge-pages.pdf', oversizedPagePdf);
 
     const res = await app.inject({
@@ -220,7 +214,7 @@ describe('Comprehensive End-to-End Audited Backend Verification', () => {
     expect(res.statusCode).toBe(400);
     const body = JSON.parse(res.body);
     expect(body.error.code).toBe('FILE_VALIDATION_ERROR');
-    expect(body.error.message).toContain('exceeds the maximum allowed limit of 5 pages');
+    expect(body.error.message).toContain('exceeds the maximum allowed limit of 1 pages');
   });
 
   // 5. OVERSIZED FILE TEST

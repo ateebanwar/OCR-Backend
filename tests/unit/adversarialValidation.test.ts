@@ -289,7 +289,7 @@ describe('Adversarial Production Validation Suite', () => {
       const config = loadConfig({ NODE_ENV: 'test', AI_PROVIDER: 'mock' });
       const service = new DocumentProcessingService(mockProvider, config);
 
-      const fakePdf = Buffer.from('%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF');
+      const fakePdf = fs.readFileSync(path.join(FIXTURES_DIR, 'test01_simple_invoice.pdf'));
       // CRITICAL ASSERTION: AI claiming verified CANNOT override arithmetic discrepancy!
       // Document is NOT verified, reconciliation is false, and status is REVIEW_REQUIRED!
       const result = await service.processDocument(fakePdf, 'test_override.pdf');
@@ -344,25 +344,19 @@ describe('Adversarial Production Validation Suite', () => {
   // 5. SECURITY CONTROLS: PRE-AI REJECTION
   // --------------------------------------------------------------------------
   describe('Security Controls: Pre-AI File Validation', () => {
-    it('rejects malformed PDF with missing magic bytes before invoking any AI calls', () => {
+    it('rejects malformed PDF with missing magic bytes before invoking any AI calls', async () => {
       const malformedBuffer = Buffer.from('CORRUPTED_NON_PDF_BYTES_12345678');
-      expect(() => validatePdfBuffer(malformedBuffer, 'corrupted.pdf', 15 * 1024 * 1024)).toThrow(
-        /magic bytes/i
-      );
+      await expect(validatePdfBuffer(malformedBuffer, 'corrupted.pdf', 15 * 1024 * 1024)).rejects.toThrow(/magic bytes/i);
     });
 
-    it('rejects files with invalid extensions', () => {
-      const validPdfBuffer = Buffer.from('%PDF-1.4\n1 0 obj\nendobj\n%%EOF');
-      expect(() => validatePdfBuffer(validPdfBuffer, 'invoice.exe', 15 * 1024 * 1024)).toThrow(
-        /unsupported file extension/i
-      );
+    it('rejects files with invalid extensions', async () => {
+      const validPdfBuffer = fs.readFileSync(path.join(FIXTURES_DIR, 'test01_simple_invoice.pdf'));
+      await expect(validatePdfBuffer(validPdfBuffer, 'invoice.exe', 15 * 1024 * 1024)).rejects.toThrow(/unsupported file extension/i);
     });
 
-    it('rejects password-protected / encrypted PDFs before AI invocation', () => {
+    it('rejects password-protected / encrypted PDFs before AI invocation', async () => {
       const encryptedBuffer = fs.readFileSync(path.join(FIXTURES_DIR, 'test16_encrypted.pdf'));
-      expect(() => validatePdfBuffer(encryptedBuffer, 'encrypted.pdf', 15 * 1024 * 1024)).toThrow(
-        /password-protected or encrypted/i
-      );
+      await expect(validatePdfBuffer(encryptedBuffer, 'encrypted.pdf', 15 * 1024 * 1024)).rejects.toThrow(/password-protected or encrypted/i);
     });
   });
 

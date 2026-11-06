@@ -1,39 +1,34 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const FIXTURES_DIR = path.resolve('tests/fixtures/documents');
 import { validatePdfBuffer, sanitizeFilename } from '../../src/security/fileValidator';
 import { FileValidationError } from '../../src/errors/AppError';
 
 describe('PDF Ingestion Security', () => {
-  it('detects and rejects password-protected or encrypted PDFs early', () => {
-    const encryptedPdfBuffer = Buffer.from(
-      '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\ntrailer\n<< /Root 1 0 R /Encrypt 12 0 R >>\n%%EOF'
-    );
+  it('detects and rejects password-protected or encrypted PDFs early', async () => {
+    const encryptedPdfBuffer = fs.readFileSync(path.join(FIXTURES_DIR, 'test16_encrypted.pdf'));
 
-    expect(() =>
+    await expect(
       validatePdfBuffer(encryptedPdfBuffer, 'secure_invoice.pdf', 15 * 1024 * 1024, 50)
-    ).toThrowError(FileValidationError);
+    ).rejects.toBeInstanceOf(FileValidationError);
 
-    expect(() =>
+    await expect(
       validatePdfBuffer(encryptedPdfBuffer, 'secure_invoice.pdf', 15 * 1024 * 1024, 50)
-    ).toThrowError(/password-protected or encrypted/);
+    ).rejects.toThrow(/password-protected or encrypted/i);
   });
 
-  it('rejects PDFs exceeding the configured page limit', () => {
-    let multiPageContent = '%PDF-1.4\n';
-    for (let i = 0; i < 25; i++) {
-      multiPageContent += `${i + 1} 0 obj\n<< /Type /Page >>\nendobj\n`;
-    }
-    multiPageContent += '%%EOF';
+  it('rejects PDFs exceeding the configured page limit', async () => {
+    const buffer = fs.readFileSync(path.join(FIXTURES_DIR, 'test02_multipage_invoice.pdf'));
 
-    const buffer = Buffer.from(multiPageContent);
+    await expect(
+      validatePdfBuffer(buffer, 'large_statement.pdf', 15 * 1024 * 1024, 1)
+    ).rejects.toBeInstanceOf(FileValidationError);
 
-    // Limit configured to 10 pages, document has 25
-    expect(() =>
-      validatePdfBuffer(buffer, 'large_statement.pdf', 15 * 1024 * 1024, 10)
-    ).toThrowError(FileValidationError);
-
-    expect(() =>
-      validatePdfBuffer(buffer, 'large_statement.pdf', 15 * 1024 * 1024, 10)
-    ).toThrowError(/exceeds the maximum allowed limit of 10 pages/);
+    await expect(
+      validatePdfBuffer(buffer, 'large_statement.pdf', 15 * 1024 * 1024, 1)
+    ).rejects.toThrow(/exceeds the maximum allowed limit of 1 pages/i);
   });
 
   it('sanitizes Unicode Right-to-Left Override (RTLO) and control characters in filenames', () => {

@@ -1,0 +1,760 @@
+
+> financial-document-intelligence-backend@1.0.0 test
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mD:/OCR backend/OCR-Backend[39m
+
+[90mstderr[2m | tests/unit/adversarialValidation.test.ts[2m > [22m[2mAdversarial Production Validation Suite[2m > [22m[2mSecond-Pass Verification & Deterministic Authority[2m > [22m[2mproves DETERMINISTIC OVERRIDE: AI verification pass claiming verified CANNOT override arithmetic discrepancy
+[22m[39mWarning: Indexing all PDF objects
+
+[90mstderr[2m | tests/unit/adversarialValidation.test.ts[2m > [22m[2mAdversarial Production Validation Suite[2m > [22m[2mSecurity Controls: Pre-AI File Validation
+[22m[39mWarning: Indexing all PDF objects
+
+ [31m❯[39m tests/unit/adversarialValidation.test.ts [2m([22m[2m24 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 371[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mEnvironment & Configuration Validation[2m > [22menforces safe fallbacks and validates all 5 distinct model tiers[32m 6[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mEnvironment & Configuration Validation[2m > [22mscrubs sensitive credentials, tokens, and buffer byte content from logs and objects[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase A: Exact mathematical match passes with toleranceApplied = 0[32m 3[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase B: Subtotal wrong by 0.01 fails (rejected, zero arbitrary tolerance)[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase C: Tax wrong by 0.01 fails[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase D: Grand total wrong by 0.01 fails[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase E: Line item missing fails[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase F: Line item duplicated fails[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase G: Discount omitted fails[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase H: Tax breakdown does not sum to taxTotal fails[32m 1[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mFinancial Reconciliation Adversarial Arithmetic (Zero Blind Tolerance)[2m > [22mCase I: Exact subtotal-level commercial tax convention reconciles deterministically[32m 1[2mms[22m[39m
+[31m   [31m×[31m Adversarial Production Validation Suite[2m > [22mSecond-Pass Verification & Deterministic Authority[2m > [22mproves DETERMINISTIC OVERRIDE: AI verification pass claiming verified CANNOT override arithmetic discrepancy[39m[32m 126[2mms[22m[39m
+[31m     → Invalid, corrupted, encrypted, or unsupported PDF document.[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mXLSX Generation & Formula Injection Defense[2m > [22mneutralizes malicious formula injection characters in line item descriptions[32m 163[2mms[22m[39m
+[31m   [31m×[31m Adversarial Production Validation Suite[2m > [22mSecurity Controls: Pre-AI File Validation[2m > [22mrejects malformed PDF with missing magic bytes before invoking any AI calls[39m[32m 6[2mms[22m[39m
+[31m     → expected [Function] to throw an error[39m
+[31m   [31m×[31m Adversarial Production Validation Suite[2m > [22mSecurity Controls: Pre-AI File Validation[2m > [22mrejects files with invalid extensions[39m[32m 1[2mms[22m[39m
+[31m     → expected [Function] to throw an error[39m
+[31m   [31m×[31m Adversarial Production Validation Suite[2m > [22mSecurity Controls: Pre-AI File Validation[2m > [22mrejects password-protected / encrypted PDFs before AI invocation[39m[32m 4[2mms[22m[39m
+[31m     → expected [Function] to throw an error[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 01 - Simple 1-page invoice routes to TIER_1_SIMPLE[32m 15[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 02 - Multi-page invoice routes to TIER_2_COMPLEX[32m 6[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 03 - Dense financial table with 16 vector grid lines routes to TIER_2_COMPLEX[32m 3[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 06 - Financial statement with running balance carried forward routes to TIER_3_ESCALATION[32m 3[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 07 - High-complexity 3-page consolidated document routes to TIER_3_ESCALATION[32m 5[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 08 - CRITICAL PROOF: 1-page document with 20 vector grid lines and dense taxes routes to TIER_2_COMPLEX[32m 3[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 09 - Multi-page simple document with 3 pages does NOT blindly trigger Tier 3[32m 5[2mms[22m[39m
+   [32m✓[39m Adversarial Production Validation Suite[2m > [22mReal PDF Corpus Multi-Signal Complexity & Model Routing Matrix[2m > [22mTEST 10 - Scanned image density triggers complexity signals[32m 3[2mms[22m[39m
+[90mstderr[2m | tests/security/pdfSecurity.test.ts[2m > [22m[2mPDF Ingestion Security[2m > [22m[2mrejects PDFs exceeding the configured page limit
+[22m[39mWarning: Indexing all PDF objects
+
+[90mstderr[2m | tests/security/pdfSecurity.test.ts[2m > [22m[2mPDF Ingestion Security
+[22m[39mWarning: Indexing all PDF objects
+
+ [31m❯[39m tests/security/pdfSecurity.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 125[2mms[22m[39m
+[31m   [31m×[31m PDF Ingestion Security[2m > [22mdetects and rejects password-protected or encrypted PDFs early[39m[32m 104[2mms[22m[39m
+[31m     → expected function to throw an error, but it didn't[39m
+[31m   [31m×[31m PDF Ingestion Security[2m > [22mrejects PDFs exceeding the configured page limit[39m[32m 9[2mms[22m[39m
+[31m     → expected function to throw an error, but it didn't[39m
+   [32m✓[39m PDF Ingestion Security[2m > [22msanitizes Unicode Right-to-Left Override (RTLO) and control characters in filenames[32m 2[2mms[22m[39m
+{"level":30,"time":1794001003402,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001003416,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003429,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","requestId":"57a42f21-883b-4987-8554-3ce94b5c82fc","errorCode":"UNSUPPORTED_DOCUMENT_TYPE","statusCode":415,"message":"Invalid PDF signature. The PDF header was not found within the first 1024 bytes."}
+{"level":30,"time":1794001003434,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":415},"responseTime":29.222800000000007,"msg":"request completed"}
+{"level":30,"time":1794001003447,"pid":4176,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+ [31m❯[39m tests/security/securityAndValidation.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 363[2mms[22m[39m
+[31m   [31m×[31m Security and Validation Safeguards[2m > [22mrejects fake PDF that does not begin with %PDF magic bytes[39m[32m 66[2mms[22m[39m
+[31m     → expected 'Invalid PDF signature. The PDF header…' to contain 'magic bytes'[39m
+   [32m✓[39m Security and Validation Safeguards[2m > [22mrejects unsupported file extension (.exe)[32m 9[2mms[22m[39m
+   [32m✓[39m Security and Validation Safeguards[2m > [22msanitizes path traversal attempts in filenames[32m 1[2mms[22m[39m
+   [32m✓[39m Security and Validation Safeguards[2m > [22mscrubs API keys and secrets from strings and nested objects[32m 1[2mms[22m[39m
+   [32m✓[39m Security and Validation Safeguards[2m > [22mpropagates custom X-Request-ID header correctly[32m 3[2mms[22m[39m
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mE2E Flow: Valid PDF upload -> validation -> extraction -> reconciliation -> verification -> XLSX generation & download
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001003772,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":353.0921000000003,"msg":"request completed"}
+{"level":30,"time":1794001003779,"pid":10052,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/download","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001003786,"pid":10052,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":7.3703999999997905,"msg":"request completed"}
+{"level":30,"time":1794001003838,"pid":10052,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001003840,"pid":10052,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":200},"responseTime":1.4906000000000859,"msg":"request completed"}
+{"level":30,"time":1794001003842,"pid":10052,"hostname":"Ruteeb","reqId":"req-4","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001003845,"pid":10052,"hostname":"Ruteeb","reqId":"req-4","res":{"statusCode":200},"responseTime":2.3766999999998006,"msg":"request completed"}
+{"level":30,"time":1794001003846,"pid":10052,"hostname":"Ruteeb","reqId":"req-5","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001003849,"pid":10052,"hostname":"Ruteeb","reqId":"req-5","res":{"statusCode":200},"responseTime":3.102899999999863,"msg":"request completed"}
+{"level":30,"time":1794001003851,"pid":10052,"hostname":"Ruteeb","reqId":"req-6","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003855,"pid":10052,"hostname":"Ruteeb","reqId":"req-6","requestId":"e9f67274-1994-429e-a13b-3cf9300fb88e","errorCode":"UNSUPPORTED_DOCUMENT_TYPE","statusCode":415,"message":"Invalid PDF signature. The PDF header was not found within the first 1024 bytes."}
+{"level":30,"time":1794001003855,"pid":10052,"hostname":"Ruteeb","reqId":"req-6","res":{"statusCode":415},"responseTime":4.461500000000342,"msg":"request completed"}
+{"level":30,"time":1794001003946,"pid":10052,"hostname":"Ruteeb","reqId":"req-7","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003953,"pid":10052,"hostname":"Ruteeb","reqId":"req-7","requestId":"8375abe3-7233-4cbf-8e2e-379fb85b9cf5","errorCode":"UNSUPPORTED_DOCUMENT_TYPE","statusCode":415,"message":"Unsupported file extension '.sh'. Only .pdf is allowed."}
+{"level":30,"time":1794001003954,"pid":10052,"hostname":"Ruteeb","reqId":"req-7","res":{"statusCode":415},"responseTime":7.648699999999735,"msg":"request completed"}
+{"level":30,"time":1794001003955,"pid":10052,"hostname":"Ruteeb","reqId":"req-8","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mRejection: rejects encrypted / password-protected PDF
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":40,"time":1794001003964,"pid":10052,"hostname":"Ruteeb","reqId":"req-8","requestId":"9acba60f-a7c1-4fcf-88a0-daae6acb67eb","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid, corrupted, encrypted, or unsupported PDF document."}
+{"level":30,"time":1794001003965,"pid":10052,"hostname":"Ruteeb","reqId":"req-8","res":{"statusCode":400},"responseTime":9.653999999999996,"msg":"request completed"}
+{"level":30,"time":1794001003970,"pid":10052,"hostname":"Ruteeb","reqId":"req-9","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mRejection: rejects PDF exceeding configured page count limit
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":40,"time":1794001003974,"pid":10052,"hostname":"Ruteeb","reqId":"req-9","requestId":"0372b949-24c4-4308-b927-76ec180c560f","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid, corrupted, encrypted, or unsupported PDF document."}
+{"level":30,"time":1794001003976,"pid":10052,"hostname":"Ruteeb","reqId":"req-9","res":{"statusCode":400},"responseTime":5.914299999999912,"msg":"request completed"}
+{"level":30,"time":1794001003984,"pid":10052,"hostname":"Ruteeb","reqId":"req-a","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003987,"pid":10052,"hostname":"Ruteeb","reqId":"req-a","requestId":"68d010ce-64ee-4acc-8769-502d909619db","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Uploaded file exceeds the maximum allowed size."}
+{"level":30,"time":1794001003988,"pid":10052,"hostname":"Ruteeb","reqId":"req-a","res":{"statusCode":400},"responseTime":2.8760000000002037,"msg":"request completed"}
+{"level":30,"time":1794001003990,"pid":10052,"hostname":"Ruteeb","reqId":"req-b","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003991,"pid":10052,"hostname":"Ruteeb","reqId":"req-b","requestId":"d36e007d-7f11-486c-b124-bd35311dc8e2","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid content-type or payload. Expected multipart/form-data with PDF file or application/json with a valid blobPathname."}
+{"level":30,"time":1794001003992,"pid":10052,"hostname":"Ruteeb","reqId":"req-b","res":{"statusCode":400},"responseTime":2.1927999999998065,"msg":"request completed"}
+{"level":30,"time":1794001003993,"pid":10052,"hostname":"Ruteeb","reqId":"req-c","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003995,"pid":10052,"hostname":"Ruteeb","reqId":"req-c","requestId":"56c83b54-22f0-4f20-81f4-ef786a92d793","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Uploaded file buffer is empty."}
+{"level":30,"time":1794001003996,"pid":10052,"hostname":"Ruteeb","reqId":"req-c","res":{"statusCode":400},"responseTime":2.469800000000305,"msg":"request completed"}
+{"level":30,"time":1794001003997,"pid":10052,"hostname":"Ruteeb","reqId":"req-d","req":{"method":"POST","url":"/api/v1/documents/download","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001004038,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001003998,"pid":10052,"hostname":"Ruteeb","reqId":"req-d","requestId":"c5357eb4-3ea5-4c11-b28b-8488ba220725","errorCode":"VALIDATION_FAILED","statusCode":422,"message":"Invalid download request payload.","details":[{"code":"too_small","minimum":10,"type":"string","inclusive":true,"exact":false,"message":"Valid base64 XLSX content is required","path":["xlsxBase64"]}]}
+{"level":30,"time":1794001003999,"pid":10052,"hostname":"Ruteeb","reqId":"req-d","res":{"statusCode":422},"responseTime":2.360400000000027,"msg":"request completed"}
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mProvider Failure: returns structured error when AI provider encounters unrecoverable failure
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":40,"time":1794001004050,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","requestId":"2e240533-e49f-42ad-b8bc-492505ce6377","errorCode":"EXTRACTION_FAILED","statusCode":422,"message":"Initial document extraction failed: Gemini 503 Backend Overloaded"}
+{"level":30,"time":1794001004077,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001004052,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":422},"responseTime":14.234999999999673,"msg":"request completed"}
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mValidation & Recovery: escalates model and retries when initial AI response violates schema
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001004169,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":89.8114999999998,"msg":"request completed"}
+{"level":30,"time":1794001004191,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mReconciliation Discrepancy: returns 200 REVIEW_REQUIRED with exact discrepancy breakdown and reviewToken when figures do not balance
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001004235,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":43.83349999999973,"msg":"request completed"}
+{"level":30,"time":1794001004254,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/integration/endToEndAuditedPipeline.test.ts[2m > [22m[2mComprehensive End-to-End Audited Backend Verification[2m > [22m[2mCorrection Loop: auto-corrects discrepancy via AI correction loop and achieves verified match
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001004299,"pid":10052,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":44.51040000000012,"msg":"request completed"}
+ [31m❯[39m tests/integration/endToEndAuditedPipeline.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 1201[2mms[22m[39m
+   [33m[2m✓[22m[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mE2E Flow: Valid PDF upload -> validation -> extraction -> reconciliation -> verification -> XLSX generation & download [33m 450[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mHealth Check: GET /api/v1/health returns 200 with service health info and no leaked secrets[32m 4[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mChat: POST /api/v1/chat processes prompt and supports SSE streaming[32m 9[2mms[22m[39m
+[31m   [31m×[31m Comprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects non-PDF file content without %PDF magic bytes[39m[32m 87[2mms[22m[39m
+[31m     → expected 'Invalid PDF signature. The PDF header…' to contain 'magic bytes'[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects disallowed file extension (.sh)[32m 18[2mms[22m[39m
+[31m   [31m×[31m Comprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects encrypted / password-protected PDF[39m[32m 14[2mms[22m[39m
+[31m     → expected 'Invalid, corrupted, encrypted, or uns…' to contain 'password-protected or encrypted'[39m
+[31m   [31m×[31m Comprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects PDF exceeding configured page count limit[39m[32m 13[2mms[22m[39m
+[31m     → expected 'Invalid, corrupted, encrypted, or uns…' to contain 'exceeds the maximum allowed limit of …'[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects file exceeding maxUploadSizeBytes[32m 7[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mMalformed Input: rejects non-multipart request to /documents/process[32m 3[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mMalformed Input: rejects empty file buffer[32m 4[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mMalformed Input: rejects invalid payload on /documents/download[32m 3[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mProvider Failure: returns structured error when AI provider encounters unrecoverable failure[32m 55[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mValidation & Recovery: escalates model and retries when initial AI response violates schema[32m 116[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mReconciliation Discrepancy: returns 200 REVIEW_REQUIRED with exact discrepancy breakdown and reviewToken when figures do not balance[32m 66[2mms[22m[39m
+   [32m✓[39m Comprehensive End-to-End Audited Backend Verification[2m > [22mCorrection Loop: auto-corrects discrepancy via AI correction loop and achieves verified match[32m 64[2mms[22m[39m
+[90mstderr[2m | tests/unit/fallbackAndCorrection.test.ts[2m > [22m[2mFallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22m[2mScenario 7: Persistent financial mismatch exhausts retries, marks as unverified REVIEW_REQUIRED with safe XLSX
+[22m[39mWarning: Indexing all PDF objects
+
+ [31m❯[39m tests/unit/fallbackAndCorrection.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 142[2mms[22m[39m
+   [32m✓[39m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 1: Primary model succeeds and extraction is valid -> retryCount=0, escalationCount=0[32m 8[2mms[22m[39m
+   [32m✓[39m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 2: GeminiProvider candidate fallback chain contains fast resilience models[32m 2[2mms[22m[39m
+   [32m✓[39m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 3: GeminiProvider candidate fallback chain handles custom model and avoids duplicates[32m 1[2mms[22m[39m
+   [32m✓[39m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 4: Malformed JSON output triggers escalation and retry with escalated model[32m 3[2mms[22m[39m
+   [32m✓[39m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 5: Schema validation failure triggers escalation and re-extraction[32m 2[2mms[22m[39m
+   [32m✓[39m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 6: Reconciliation mismatch triggers AI correction loop with discrepancy feedback[32m 3[2mms[22m[39m
+[31m   [31m×[31m Fallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 7: Persistent financial mismatch exhausts retries, marks as unverified REVIEW_REQUIRED with safe XLSX[39m[32m 122[2mms[22m[39m
+[31m     → Invalid, corrupted, encrypted, or unsupported PDF document.[39m
+{"level":30,"time":1794001007546,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m1. Mode A: Direct Multipart Path (<= 4 MB threshold)[2m > [22m[2mprocesses small 1 MB PDF directly through multipart without touching Blob storage
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001008197,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":647.8593999999998,"msg":"request completed"}
+{"level":30,"time":1794001008232,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m1. Mode A: Direct Multipart Path (<= 4 MB threshold)[2m > [22m[2mprocesses 3 MB PDF directly through multipart
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001008443,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":210.57359999999971,"msg":"request completed"}
+{"level":30,"time":1794001008472,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m1. Mode A: Direct Multipart Path (<= 4 MB threshold)[2m > [22m[2mprocesses 4 MB PDF directly through multipart (safe threshold boundary)
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001008626,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/review","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001008690,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":62.292199999999866,"msg":"request completed"}
+{"level":30,"time":1794001008686,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":213.20780000000013,"msg":"request completed"}
+{"level":30,"time":1794001008703,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/upload-token","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001008710,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":6.510299999999916,"msg":"request completed"}
+{"level":30,"time":1794001008717,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/review","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001008721,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","requestId":"7abc49fd-ece3-4071-91d7-2775575cca40","errorCode":"VALIDATION_FAILED","statusCode":422,"message":"Invalid document review payload.","details":[{"code":"too_small","minimum":1,"type":"string","inclusive":true,"exact":false,"message":"reviewToken is required","path":["reviewToken"]},{"code":"too_small","minimum":1,"type":"array","inclusive":true,"exact":false,"message":"At least one resolution is required","path":["resolutions"]}]}
+{"level":30,"time":1794001008740,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/correctionAndReviewWorkflow.test.ts[2m > [22m[2mCorrection & Review Workflow Engine[2m > [22m[2mEnd-to-End Pipeline Status Semantics & Regression[2m > [22m[2mA. Clean invoice -> produces VERIFIED status with verified reconciliation and no review required
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001008724,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":422},"responseTime":6.177999999999884,"msg":"request completed"}
+[90mstderr[2m | tests/unit/correctionAndReviewWorkflow.test.ts[2m > [22m[2mCorrection & Review Workflow Engine[2m > [22m[2mEnd-to-End Pipeline Status Semantics & Regression[2m > [22m[2mB. Auto-corrected promotional discount -> produces VERIFIED_WITH_CORRECTIONS status with 0 variance math
+[22m[39mWarning: Indexing all PDF objects
+
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m2. Mode B: Private Vercel Blob Path (> 4 MB up to 25 MB)[2m > [22m[2mprocesses 5 MB PDF via Private Blob reference, converges into existing pipeline, and deletes source blob
+[22m[39mWarning: Indexing all PDF objects
+
+[90mstderr[2m | tests/unit/correctionAndReviewWorkflow.test.ts[2m > [22m[2mCorrection & Review Workflow Engine[2m > [22m[2mEnd-to-End Pipeline Status Semantics & Regression[2m > [22m[2mC. Ambiguous value -> produces REVIEW_REQUIRED + XLSX + reviewToken without throwing
+[22m[39mWarning: Indexing all PDF objects
+
+[90mstderr[2m | tests/unit/correctionAndReviewWorkflow.test.ts[2m > [22m[2mCorrection & Review Workflow Engine[2m > [22m[2mEnd-to-End Pipeline Status Semantics & Regression[2m > [22m[2mD. Unresolved RECONCILIATION_WARNING -> produces REVIEW_REQUIRED + XLSX + reviewToken without throwing DocumentProcessingError
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001009017,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":276.4274999999998,"msg":"request completed"}
+{"level":30,"time":1794001009064,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001009243,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001009352,"pid":14024,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":108.58149999999932,"msg":"request completed"}
+ [32m✓[39m tests/unit/correctionAndReviewWorkflow.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 1698[2mms[22m[39m
+   [33m[2m✓[22m[39m Correction & Review Workflow Engine[2m > [22mFastify Review API Route[2m > [22mhandles review resolution request and returns updated 200 payload [33m 475[2mms[22m[39m
+{"level":30,"time":1794001009517,"pid":4472,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/security/concurrencyGuard.test.ts[2m > [22m[2mConcurrency & Resource Guard (CWE-400)[2m > [22m[2mrejects processing requests with 503 SERVER_TOO_BUSY when concurrency limit is exceeded
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001009675,"pid":4472,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001009682,"pid":4472,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":503},"responseTime":5.947100000000319,"msg":"request completed"}
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m2. Mode B: Private Vercel Blob Path (> 4 MB up to 25 MB)[2m > [22m[2mprocesses 20 MB PDF via Private Blob reference successfully
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001009996,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":932.4567999999999,"msg":"request completed"}
+{"level":30,"time":1794001010046,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001010466,"pid":4472,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":947.1790000000001,"msg":"request completed"}
+ [32m✓[39m tests/security/concurrencyGuard.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 1354[2mms[22m[39m
+   [33m[2m✓[22m[39m Concurrency & Resource Guard (CWE-400)[2m > [22mrejects processing requests with 503 SERVER_TOO_BUSY when concurrency limit is exceeded [33m 1350[2mms[22m[39m
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m2. Mode B: Private Vercel Blob Path (> 4 MB up to 25 MB)[2m > [22m[2mprocesses exactly 25 MB PDF via Private Blob reference successfully
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001011094,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":1047.6779999999999,"msg":"request completed"}
+{"level":30,"time":1794001011133,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001011165,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"0ab13096-10b6-4edb-a1ca-6036bfcf1ba1","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Uploaded file exceeds the maximum allowed size of 25MB."}
+{"level":30,"time":1794001011201,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011166,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":400},"responseTime":32.7528999999995,"msg":"request completed"}
+{"level":40,"time":1794001011205,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"5a82dccc-0e47-4311-893f-1952a00cc08d","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid Blob reference. Pathname must match the controlled PDF upload namespace."}
+{"level":30,"time":1794001011226,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011205,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":400},"responseTime":3.0812999999998283,"msg":"request completed"}
+{"level":40,"time":1794001011228,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"e718e218-6ed0-454c-aac5-1e073060ca14","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid Blob reference. Pathname must match the controlled PDF upload namespace."}
+{"level":30,"time":1794001011244,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011228,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":400},"responseTime":1.8841999999995096,"msg":"request completed"}
+{"level":40,"time":1794001011245,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"68211bc8-dc30-4c37-a475-2b6b29650bbc","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid Blob reference. Pathname must match the controlled PDF upload namespace."}
+{"level":30,"time":1794001011246,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":400},"responseTime":1.8371999999999389,"msg":"request completed"}
+{"level":30,"time":1794001011247,"pid":12860,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011267,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001011248,"pid":12860,"hostname":"Ruteeb","reqId":"req-2","requestId":"2dce9cc0-2a1a-4505-a897-741fcad17747","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid Blob reference. Pathname must match the controlled PDF upload namespace."}
+{"level":30,"time":1794001011248,"pid":12860,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":400},"responseTime":1.5306000000000495,"msg":"request completed"}
+{"level":40,"time":1794001011268,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"54e7d7c5-7e21-493b-8773-031164f2d6b3","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Referenced blob was not found or has expired."}
+{"level":30,"time":1794001011288,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011269,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":400},"responseTime":1.9282000000002881,"msg":"request completed"}
+{"level":40,"time":1794001011290,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"6565581d-25fc-496d-a38c-a56093a480fd","errorCode":"UNSUPPORTED_DOCUMENT_TYPE","statusCode":415,"message":"Invalid PDF signature. The PDF header was not found within the first 1024 bytes."}
+{"level":30,"time":1794001011317,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011290,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":415},"responseTime":2.393699999999626,"msg":"request completed"}
+{"level":40,"time":1794001011319,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"ce3b66b9-22c8-4d21-9503-0880dfdd1dda","errorCode":"DOCUMENT_PROCESSING_FAILED","statusCode":422,"message":"Simulated unexpected fatal crash"}
+{"level":30,"time":1794001011341,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011319,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":422},"responseTime":2.4096000000008644,"msg":"request completed"}
+[90mstderr[2m | tests/unit/hybridUpload.test.ts[2m > [22m[2mHybrid PDF Upload & Transport Layer Suite[2m > [22m[2m4. Lifecycle Cleanup on Failure Scenarios[2m > [22m[2msafely tolerates and logs when blob deletion itself fails without masking errors
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":40,"time":1794001011383,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","pathname":"ocr-intelligence/uploads/7782f084-e886-4ed1-932c-e001c6cad6ae/delete-fail.pdf","error":"Simulated Vercel Blob deletion service failure","msg":"Failed to cleanup source PDF from Blob storage"}
+{"level":30,"time":1794001011403,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011438,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/upload-token","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011384,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":43.04140000000007,"msg":"request completed"}
+{"level":30,"time":1794001011404,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":0.9737999999997555,"msg":"request completed"}
+{"level":40,"time":1794001011439,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","requestId":"58ee2e4b-b571-48b7-9dac-dec2beedf7cf","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001011440,"pid":12860,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":401},"responseTime":1.7694999999994252,"msg":"request completed"}
+{"level":30,"time":1794001011441,"pid":12860,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011445,"pid":12860,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":4.091099999999642,"msg":"request completed"}
+{"level":30,"time":1794001011445,"pid":12860,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/documents/upload-token","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001011447,"pid":12860,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":200},"responseTime":1.8842999999997119,"msg":"request completed"}
+ [32m✓[39m tests/unit/hybridUpload.test.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 4600[2mms[22m[39m
+   [33m[2m✓[22m[39m Hybrid PDF Upload & Transport Layer Suite[2m > [22m1. Mode A: Direct Multipart Path (<= 4 MB threshold)[2m > [22mprocesses small 1 MB PDF directly through multipart without touching Blob storage [33m 1338[2mms[22m[39m
+   [33m[2m✓[22m[39m Hybrid PDF Upload & Transport Layer Suite[2m > [22m2. Mode B: Private Vercel Blob Path (> 4 MB up to 25 MB)[2m > [22mprocesses 5 MB PDF via Private Blob reference, converges into existing pipeline, and deletes source blob [33m 306[2mms[22m[39m
+   [33m[2m✓[22m[39m Hybrid PDF Upload & Transport Layer Suite[2m > [22m2. Mode B: Private Vercel Blob Path (> 4 MB up to 25 MB)[2m > [22mprocesses 20 MB PDF via Private Blob reference successfully [33m 979[2mms[22m[39m
+   [33m[2m✓[22m[39m Hybrid PDF Upload & Transport Layer Suite[2m > [22m2. Mode B: Private Vercel Blob Path (> 4 MB up to 25 MB)[2m > [22mprocesses exactly 25 MB PDF via Private Blob reference successfully [33m 1097[2mms[22m[39m
+[90mstderr[2m | tests/unit/accessControl.test.ts[2m > [22m[2mSecure Password Access Gate & Access Control Suite[2m > [22m[2m1. Configuration & Fail-Safe Startup[2m > [22m[2mthrows ConfigurationError in production if REQUIRE_PASSWORD=true but ACCESS_TOKEN_SECRET is missing
+[22m[39m[SECURITY WARNING] GEMINI_API_KEY is not configured or is a placeholder in production.
+
+{"level":30,"time":1794001012702,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001012736,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001012759,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001012717,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":12.440700000000106,"msg":"request completed"}
+{"level":30,"time":1794001012737,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":0.9808000000002721,"msg":"request completed"}
+{"level":30,"time":1794001012766,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":6.982099999999718,"msg":"request completed"}
+{"level":30,"time":1794001012768,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001012792,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","requestId":"572cb7f9-4321-4247-a816-a1bc6c41b783","errorCode":"INVALID_ACCESS_PASSWORD","statusCode":401,"message":"Invalid access credentials."}
+{"level":30,"time":1794001012793,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":401},"responseTime":24.268099999999777,"msg":"request completed"}
+{"level":30,"time":1794001012794,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001012820,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001012798,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","requestId":"9b6acc48-28a1-4562-9e48-28b0d06457a0","errorCode":"VALIDATION_FAILED","statusCode":422,"message":"Invalid verification request payload.","details":[{"code":"too_small","minimum":1,"type":"string","inclusive":true,"exact":false,"message":"Password is required","path":["password"]}]}
+{"level":30,"time":1794001012798,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":422},"responseTime":3.901800000000094,"msg":"request completed"}
+{"level":30,"time":1794001012822,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":2.206499999999778,"msg":"request completed"}
+{"level":30,"time":1794001012824,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001012825,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","requestId":"7148a127-3a68-427c-a36d-89d2d5961a83","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001012825,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":401},"responseTime":1.4542999999998756,"msg":"request completed"}
+{"level":30,"time":1794001012826,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001012827,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","requestId":"e4806c67-2330-4962-a271-6db45f6c5e51","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001012827,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":401},"responseTime":0.7213000000001557,"msg":"request completed"}
+{"level":30,"time":1794001012828,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001012831,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","requestId":"10261919-047c-47b0-9a3f-b19612ec3616","errorCode":"INVALID_ACCESS_TOKEN","statusCode":401,"message":"Invalid or expired access token."}
+{"level":30,"time":1794001012831,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","res":{"statusCode":401},"responseTime":2.6289999999999054,"msg":"request completed"}
+{"level":30,"time":1794001012832,"pid":2844,"hostname":"Ruteeb","reqId":"req-5","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/accessControl.test.ts[2m > [22m[2mSecure Password Access Gate & Access Control Suite[2m > [22m[2m4. Protected Endpoints Authorization Enforcement[2m > [22m[2mPOST /api/v1/documents/process succeeds with 200 when valid token is provided
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001013107,"pid":2844,"hostname":"Ruteeb","reqId":"req-5","res":{"statusCode":200},"responseTime":274.0254,"msg":"request completed"}
+{"level":30,"time":1794001013109,"pid":2844,"hostname":"Ruteeb","reqId":"req-6","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013109,"pid":2844,"hostname":"Ruteeb","reqId":"req-6","requestId":"50276d1d-de74-405c-a15a-baad65dd5504","errorCode":"INVALID_ACCESS_TOKEN","statusCode":401,"message":"Invalid or expired access token."}
+{"level":30,"time":1794001013110,"pid":2844,"hostname":"Ruteeb","reqId":"req-6","res":{"statusCode":401},"responseTime":1.4929999999999382,"msg":"request completed"}
+{"level":30,"time":1794001013111,"pid":2844,"hostname":"Ruteeb","reqId":"req-7","req":{"method":"POST","url":"/api/v1/documents/download","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013112,"pid":2844,"hostname":"Ruteeb","reqId":"req-7","requestId":"2297a3b4-6bb2-419f-874b-6613586d0378","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001013113,"pid":2844,"hostname":"Ruteeb","reqId":"req-7","res":{"statusCode":401},"responseTime":1.3515999999999622,"msg":"request completed"}
+{"level":30,"time":1794001013113,"pid":2844,"hostname":"Ruteeb","reqId":"req-8","req":{"method":"POST","url":"/api/v1/documents/download","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013115,"pid":2844,"hostname":"Ruteeb","reqId":"req-8","res":{"statusCode":200},"responseTime":1.6842999999998938,"msg":"request completed"}
+{"level":30,"time":1794001013116,"pid":2844,"hostname":"Ruteeb","reqId":"req-9","req":{"method":"POST","url":"/api/v1/documents/review","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013116,"pid":2844,"hostname":"Ruteeb","reqId":"req-9","requestId":"b18d3450-1324-4bc3-b106-2eab095b9824","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001013117,"pid":2844,"hostname":"Ruteeb","reqId":"req-9","res":{"statusCode":401},"responseTime":0.8912000000000262,"msg":"request completed"}
+{"level":30,"time":1794001013117,"pid":2844,"hostname":"Ruteeb","reqId":"req-a","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013118,"pid":2844,"hostname":"Ruteeb","reqId":"req-a","requestId":"a63ef522-9ec3-4280-8b9a-90a606036a4a","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001013119,"pid":2844,"hostname":"Ruteeb","reqId":"req-a","res":{"statusCode":401},"responseTime":1.1786999999999352,"msg":"request completed"}
+{"level":30,"time":1794001013119,"pid":2844,"hostname":"Ruteeb","reqId":"req-b","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013121,"pid":2844,"hostname":"Ruteeb","reqId":"req-b","res":{"statusCode":200},"responseTime":1.6242999999999483,"msg":"request completed"}
+{"level":30,"time":1794001013122,"pid":2844,"hostname":"Ruteeb","reqId":"req-c","req":{"method":"POST","url":"/api/v1/documents/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013122,"pid":2844,"hostname":"Ruteeb","reqId":"req-c","requestId":"f8e79a19-253c-47d6-a646-095ecd9de4c0","errorCode":"AUTHENTICATION_REQUIRED","statusCode":401,"message":"Authentication credentials are required."}
+{"level":30,"time":1794001013123,"pid":2844,"hostname":"Ruteeb","reqId":"req-c","res":{"statusCode":401},"responseTime":1.074500000000171,"msg":"request completed"}
+{"level":30,"time":1794001013123,"pid":2844,"hostname":"Ruteeb","reqId":"req-d","req":{"method":"POST","url":"/api/v1/documents/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013144,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013124,"pid":2844,"hostname":"Ruteeb","reqId":"req-d","res":{"statusCode":200},"responseTime":1.16150000000016,"msg":"request completed"}
+{"level":30,"time":1794001013146,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":1.4749000000001615,"msg":"request completed"}
+{"level":30,"time":1794001013146,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/accessControl.test.ts[2m > [22m[2mSecure Password Access Gate & Access Control Suite[2m > [22m[2m5. Password Rotation & Stateless Token Invalidation[2m > [22m[2mchanging ACCESS_PASSWORD immediately invalidates OLD password and invalidates tokens issued under OLD password
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001013193,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":46.08799999999974,"msg":"request completed"}
+{"level":30,"time":1794001013211,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013213,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","requestId":"5bcf9067-79f0-4a08-b0e0-bc6a256acecd","errorCode":"INVALID_ACCESS_PASSWORD","statusCode":401,"message":"Invalid access credentials."}
+{"level":30,"time":1794001013214,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":401},"responseTime":1.9942999999998392,"msg":"request completed"}
+{"level":30,"time":1794001013214,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013215,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":1.3061999999999898,"msg":"request completed"}
+{"level":30,"time":1794001013216,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013217,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","requestId":"e905a576-a7ad-49b8-9199-f4e3885f0e05","errorCode":"INVALID_ACCESS_TOKEN","statusCode":401,"message":"Invalid or expired access token."}
+{"level":30,"time":1794001013217,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":401},"responseTime":1.150000000000091,"msg":"request completed"}
+{"level":30,"time":1794001013218,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/unit/accessControl.test.ts[2m > [22m[2mSecure Password Access Gate & Access Control Suite[2m > [22m[2m5. Password Rotation & Stateless Token Invalidation[2m > [22m[2mchanging ACCESS_PASSWORD immediately invalidates OLD password and invalidates tokens issued under OLD password
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001013271,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","res":{"statusCode":200},"responseTime":53.2199999999998,"msg":"request completed"}
+{"level":30,"time":1794001013289,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013291,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":1.640599999999722,"msg":"request completed"}
+{"level":30,"time":1794001013315,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013339,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013316,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","requestId":"b638f034-bcbd-47f4-8ee7-074ac6e0efc5","errorCode":"INVALID_ACCESS_TOKEN","statusCode":401,"message":"Invalid or expired access token."}
+{"level":30,"time":1794001013317,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":401},"responseTime":1.1239000000000487,"msg":"request completed"}
+{"level":40,"time":1794001013340,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","requestId":"fe42489e-57e4-4c32-9470-78ef3016ad44","errorCode":"INVALID_ACCESS_PASSWORD","statusCode":401,"message":"Invalid access credentials."}
+{"level":30,"time":1794001013340,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":401},"responseTime":1.6600000000003092,"msg":"request completed"}
+{"level":30,"time":1794001013341,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013342,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","requestId":"f791238d-bf8c-43a0-9150-7a85bda8a47f","errorCode":"INVALID_ACCESS_PASSWORD","statusCode":401,"message":"Invalid access credentials."}
+{"level":30,"time":1794001013342,"pid":2844,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":401},"responseTime":1.3983000000002903,"msg":"request completed"}
+{"level":30,"time":1794001013343,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013363,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001013344,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","requestId":"81db56f8-88a0-4ff6-8544-9958ee19621b","errorCode":"INVALID_ACCESS_PASSWORD","statusCode":401,"message":"Invalid access credentials."}
+{"level":30,"time":1794001013344,"pid":2844,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":401},"responseTime":1.2730999999998858,"msg":"request completed"}
+{"level":30,"time":1794001013345,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","req":{"method":"POST","url":"/api/v1/access/verify","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001013346,"pid":2844,"hostname":"Ruteeb","reqId":"req-4","res":{"statusCode":429},"responseTime":0.977100000000064,"msg":"request completed"}
+{"level":30,"time":1794001013364,"pid":2844,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":0.7680000000000291,"msg":"request completed"}
+ [32m✓[39m tests/unit/accessControl.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 1007[2mms[22m[39m
+   [33m[2m✓[22m[39m Secure Password Access Gate & Access Control Suite[2m > [22m2. Public Status Endpoint (GET /api/v1/access/status)[2m > [22mreturns passwordRequired: true when REQUIRE_PASSWORD=true without leaking any secrets [33m 349[2mms[22m[39m
+{"level":30,"time":1794001013619,"pid":1304,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/security/promptInjection.test.ts[2m > [22m[2mPrompt Injection & Adversarial Document Defense (CWE-1021)[2m > [22m[2mcorrectly processes adversarial PDF containing prompt injection attempts without altering schema or totals
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001013991,"pid":1304,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":369.2674999999999,"msg":"request completed"}
+ [32m✓[39m tests/security/promptInjection.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 752[2mms[22m[39m
+   [33m[2m✓[22m[39m Prompt Injection & Adversarial Document Defense (CWE-1021)[2m > [22mcorrectly processes adversarial PDF containing prompt injection attempts without altering schema or totals [33m 395[2mms[22m[39m
+{"level":30,"time":1794001014808,"pid":13388,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/integration/documentProcessing.test.ts[2m > [22m[2mDocument Processing API Pipeline[2m > [22m[2mPOST /api/v1/documents/process processes valid PDF through full pipeline and outputs verified XLSX
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001015144,"pid":13388,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":333.9313000000002,"msg":"request completed"}
+{"level":30,"time":1794001015150,"pid":13388,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+[90mstderr[2m | tests/integration/documentProcessing.test.ts[2m > [22m[2mDocument Processing API Pipeline[2m > [22m[2mPOST /api/v1/documents/download returns valid binary XLSX attachment
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001015193,"pid":13388,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":43.3462999999997,"msg":"request completed"}
+{"level":30,"time":1794001015194,"pid":13388,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/documents/download","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001015224,"pid":13388,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001015204,"pid":13388,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":200},"responseTime":9.417399999999816,"msg":"request completed"}
+[90mstderr[2m | tests/integration/documentProcessing.test.ts[2m > [22m[2mDocument Processing API Pipeline[2m > [22m[2mreturns 200 with REVIEW_REQUIRED and reviewToken when financial reconciliation has unresolved discrepancies on processable document
+[22m[39mWarning: Indexing all PDF objects
+
+{"level":30,"time":1794001015269,"pid":13388,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":43.98570000000018,"msg":"request completed"}
+ [32m✓[39m tests/integration/documentProcessing.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 859[2mms[22m[39m
+   [33m[2m✓[22m[39m Document Processing API Pipeline[2m > [22mPOST /api/v1/documents/process processes valid PDF through full pipeline and outputs verified XLSX [33m 363[2mms[22m[39m
+{"level":30,"time":1794001016920,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001016960,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001016938,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":15.140199999999822,"msg":"request completed"}
+{"level":30,"time":1794001016962,"pid":4176,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":1.0674000000003616,"msg":"request completed"}
+{"level":30,"time":1794001016962,"pid":4176,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001016963,"pid":4176,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":0.8606999999997242,"msg":"request completed"}
+{"level":30,"time":1794001016964,"pid":4176,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001016966,"pid":4176,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":429},"responseTime":1.7202000000002045,"msg":"request completed"}
+ [32m✓[39m tests/security/rateLimitAndHeaders.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 374[2mms[22m[39m
+   [33m[2m✓[22m[39m HTTP Security Headers and Rate Limiting[2m > [22msets required HTTP security headers (Helmet) [33m 345[2mms[22m[39m
+{"level":30,"time":1794001017544,"pid":13316,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"GET","url":"/api/v1/health","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001017572,"pid":13316,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":200},"responseTime":24.08770000000004,"msg":"request completed"}
+{"level":30,"time":1794001017586,"pid":13316,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001017608,"pid":13316,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":21.798099999999977,"msg":"request completed"}
+{"level":30,"time":1794001017611,"pid":13316,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001017621,"pid":13316,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":200},"responseTime":9.886199999999917,"msg":"request completed"}
+{"level":30,"time":1794001017622,"pid":13316,"hostname":"Ruteeb","reqId":"req-4","req":{"method":"POST","url":"/api/v1/documents/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001017629,"pid":13316,"hostname":"Ruteeb","reqId":"req-4","res":{"statusCode":200},"responseTime":7.182099999999991,"msg":"request completed"}
+ [32m✓[39m tests/integration/healthAndChat.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 526[2mms[22m[39m
+[90mstderr[2m | tests/unit/productionForensicAudit.test.ts[2m > [22m[2mProduction Forensic Audit & Telemetry Truthfulness Regression Suite[2m > [22m[2mRegression Finding 2: Complex Document Tier 2 Routing Telemetry Truthfulness[2m > [22m[2mverifies test08_onepage_complex.pdf reports escalationCount=0 when initial Tier 2 extraction succeeds
+[22m[39mWarning: Indexing all PDF objects
+
+ [32m✓[39m tests/unit/productionForensicAudit.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 453[2mms[22m[39m
+   [33m[2m✓[22m[39m Production Forensic Audit & Telemetry Truthfulness Regression Suite[2m > [22mRegression Finding 1: High Complexity Statement Verification & Telemetry[2m > [22mprocesses test07_high_complexity.pdf end-to-end: achieves top-level isVerified=true and escalationCount=0 [33m 347[2mms[22m[39m
+[90mstderr[2m | tests/unit/apiContractSummary.test.ts[2m > [22m[2mFrontend API Contract & Excel Summary Audit[2m > [22m[2mDocumentProcessingService End-to-End Contract Integration[2m > [22m[2mproduces the full authoritative summary while preserving all existing top-level fields
+[22m[39mWarning: Indexing all PDF objects
+
+ [32m✓[39m tests/unit/apiContractSummary.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 399[2mms[22m[39m
+{"level":30,"time":1794001020319,"pid":12416,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001020340,"pid":12416,"hostname":"Ruteeb","reqId":"req-1","requestId":"0340577c-e49b-4988-900d-ef9c890fdb6e","errorCode":"VALIDATION_FAILED","statusCode":422,"message":"Invalid chat request payload.","details":[{"code":"too_big","maximum":4000,"type":"string","inclusive":true,"exact":false,"message":"Message content exceeds 4,000 characters limit","path":["messages",0,"content"]}]}
+{"level":30,"time":1794001020347,"pid":12416,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":422},"responseTime":25.700500000000375,"msg":"request completed"}
+{"level":30,"time":1794001020350,"pid":12416,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"POST","url":"/api/v1/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001020359,"pid":12416,"hostname":"Ruteeb","reqId":"req-2","requestId":"ce36b1f0-5e9c-4a7b-92cb-44d075fc8af8","errorCode":"VALIDATION_FAILED","statusCode":422,"message":"Invalid chat request payload.","details":[{"code":"too_big","maximum":30,"type":"array","inclusive":true,"exact":false,"message":"Conversation history cannot exceed 30 messages","path":["messages"]}]}
+{"level":30,"time":1794001020360,"pid":12416,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":422},"responseTime":9.98929999999973,"msg":"request completed"}
+{"level":30,"time":1794001020361,"pid":12416,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"POST","url":"/api/v1/documents/chat","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001020369,"pid":12416,"hostname":"Ruteeb","reqId":"req-3","requestId":"fae799e6-abde-456f-ad00-add3c1b1b45e","errorCode":"VALIDATION_FAILED","statusCode":422,"message":"Invalid document chat payload.","details":[{"code":"too_big","maximum":50000,"type":"string","inclusive":true,"exact":false,"message":"documentContext exceeds maximum length of 50,000 characters","path":["documentContext"]}]}
+{"level":30,"time":1794001020369,"pid":12416,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":422},"responseTime":7.704999999999927,"msg":"request completed"}
+ [32m✓[39m tests/security/chatSecurity.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 403[2mms[22m[39m
+[90mstderr[2m | tests/security/corsSecurity.test.ts[2m > [22m[2mCORS & Preflight Security Verification
+[22m[39m[SECURITY WARNING] GEMINI_API_KEY is not configured or is a placeholder in production.
+
+{"level":30,"time":1794001021107,"pid":13416,"hostname":"Ruteeb","reqId":"req-1","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021119,"pid":13416,"hostname":"Ruteeb","reqId":"req-1","res":{"statusCode":204},"responseTime":10.150900000000092,"msg":"request completed"}
+{"level":30,"time":1794001021124,"pid":13416,"hostname":"Ruteeb","reqId":"req-2","req":{"method":"GET","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021136,"pid":13416,"hostname":"Ruteeb","reqId":"req-2","res":{"statusCode":200},"responseTime":11.971300000000156,"msg":"request completed"}
+{"level":30,"time":1794001021137,"pid":13416,"hostname":"Ruteeb","reqId":"req-3","req":{"method":"OPTIONS","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021138,"pid":13416,"hostname":"Ruteeb","reqId":"req-3","res":{"statusCode":204},"responseTime":0.40319999999974243,"msg":"request completed"}
+{"level":30,"time":1794001021139,"pid":13416,"hostname":"Ruteeb","reqId":"req-4","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021140,"pid":13416,"hostname":"Ruteeb","reqId":"req-4","res":{"statusCode":204},"responseTime":0.34560000000010405,"msg":"request completed"}
+{"level":30,"time":1794001021141,"pid":13416,"hostname":"Ruteeb","reqId":"req-5","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021141,"pid":13416,"hostname":"Ruteeb","reqId":"req-5","res":{"statusCode":204},"responseTime":0.6593000000002576,"msg":"request completed"}
+{"level":30,"time":1794001021143,"pid":13416,"hostname":"Ruteeb","reqId":"req-6","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021144,"pid":13416,"hostname":"Ruteeb","reqId":"req-6","res":{"statusCode":204},"responseTime":0.44980000000032305,"msg":"request completed"}
+{"level":30,"time":1794001021145,"pid":13416,"hostname":"Ruteeb","reqId":"req-7","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021145,"pid":13416,"hostname":"Ruteeb","reqId":"req-7","res":{"statusCode":204},"responseTime":0.41780000000017026,"msg":"request completed"}
+{"level":30,"time":1794001021147,"pid":13416,"hostname":"Ruteeb","reqId":"req-8","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021148,"pid":13416,"hostname":"Ruteeb","reqId":"req-8","res":{"statusCode":204},"responseTime":0.7802000000001499,"msg":"request completed"}
+{"level":30,"time":1794001021148,"pid":13416,"hostname":"Ruteeb","reqId":"req-9","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021149,"pid":13416,"hostname":"Ruteeb","reqId":"req-9","res":{"statusCode":204},"responseTime":0.3591999999998734,"msg":"request completed"}
+{"level":30,"time":1794001021150,"pid":13416,"hostname":"Ruteeb","reqId":"req-a","req":{"method":"POST","url":"/api/v1/documents/process","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":40,"time":1794001021152,"pid":13416,"hostname":"Ruteeb","reqId":"req-a","requestId":"ea15b44c-1b32-419b-aac7-508b7ea9957c","errorCode":"FILE_VALIDATION_ERROR","statusCode":400,"message":"Invalid content-type or payload. Expected multipart/form-data with PDF file or application/json with a valid blobPathname."}
+{"level":30,"time":1794001021153,"pid":13416,"hostname":"Ruteeb","reqId":"req-a","res":{"statusCode":400},"responseTime":3.042500000000018,"msg":"request completed"}
+{"level":30,"time":1794001021154,"pid":13416,"hostname":"Ruteeb","reqId":"req-b","req":{"method":"OPTIONS","url":"/api/v1/documents/download","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021155,"pid":13416,"hostname":"Ruteeb","reqId":"req-b","res":{"statusCode":204},"responseTime":0.2941000000000713,"msg":"request completed"}
+{"level":30,"time":1794001021155,"pid":13416,"hostname":"Ruteeb","reqId":"req-c","req":{"method":"GET","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021156,"pid":13416,"hostname":"Ruteeb","reqId":"req-c","res":{"statusCode":200},"responseTime":0.7020999999999731,"msg":"request completed"}
+{"level":30,"time":1794001021157,"pid":13416,"hostname":"Ruteeb","reqId":"req-d","req":{"method":"OPTIONS","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021158,"pid":13416,"hostname":"Ruteeb","reqId":"req-d","msg":"Route OPTIONS:/api/v1/access/status not found"}
+{"level":30,"time":1794001021158,"pid":13416,"hostname":"Ruteeb","reqId":"req-d","res":{"statusCode":404},"responseTime":0.7988000000000284,"msg":"request completed"}
+{"level":30,"time":1794001021159,"pid":13416,"hostname":"Ruteeb","reqId":"req-e","req":{"method":"GET","url":"/api/v1/access/status","host":"localhost:80","remoteAddress":"127.0.0.1"},"msg":"incoming request"}
+{"level":30,"time":1794001021159,"pid":13416,"hostname":"Ruteeb","reqId":"req-e","res":{"statusCode":200},"responseTime":0.487999999999829,"msg":"request completed"}
+ [32m✓[39m tests/security/corsSecurity.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 410[2mms[22m[39m
+ [32m✓[39m tests/unit/xlsxGeneratorAndVerifier.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 193[2mms[22m[39m
+ [32m✓[39m tests/security/fileValidator.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m tests/security/formulaInjection.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 175[2mms[22m[39m
+ [32m✓[39m tests/unit/modelHierarchyAndRouting.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m tests/unit/documentIntelligence.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/reconciliation.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/unit/modelConfiguration.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/financialSchema.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/complexityAnalyzer.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/decimal.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 11 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/endToEndAuditedPipeline.test.ts[2m > [22mComprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects non-PDF file content without %PDF magic bytes
+[31m[1mAssertionError[22m: expected 'Invalid PDF signature. The PDF header…' to contain 'magic bytes'[39m
+
+Expected: [32m"[7mmagic[27m bytes"[39m
+Received: [31m"[7mInvalid PDF signature. The PDF header was not found within the first 1024[27m bytes[7m.[27m"[39m
+
+[36m [2m❯[22m tests/integration/endToEndAuditedPipeline.test.ts:[2m166:32[22m[39m
+    [90m164| [39m    [34mexpect[39m(body[33m.[39msuccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m165| [39m    [34mexpect[39m(body[33m.[39merror[33m.[39mcode)[33m.[39m[34mtoBe[39m([32m'UNSUPPORTED_DOCUMENT_TYPE'[39m)[33m;[39m
+    [90m166| [39m    [34mexpect[39m(body[33m.[39merror[33m.[39mmessage)[33m.[39m[34mtoContain[39m([32m'magic bytes'[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m167| [39m  })[33m;[39m
+    [90m168| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/endToEndAuditedPipeline.test.ts[2m > [22mComprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects encrypted / password-protected PDF
+[31m[1mAssertionError[22m: expected 'Invalid, corrupted, encrypted, or uns…' to contain 'password-protected or encrypted'[39m
+
+Expected: [32m"[7mpassword-protec[27mted or [7mencrypted[27m"[39m
+Received: [31m"[7mInvalid, corrupted, encryp[27mted[7m,[27m or [7munsupported PDF document.[27m"[39m
+
+[36m [2m❯[22m tests/integration/endToEndAuditedPipeline.test.ts:[2m201:32[22m[39m
+    [90m199| [39m    [35mconst[39m body [33m=[39m [33mJSON[39m[33m.[39m[34mparse[39m(res[33m.[39mbody)[33m;[39m
+    [90m200| [39m    [34mexpect[39m(body[33m.[39merror[33m.[39mcode)[33m.[39m[34mtoBe[39m([32m'FILE_VALIDATION_ERROR'[39m)[33m;[39m
+    [90m201| [39m    expect(body.error.message).toContain('password-protected or encryp…
+    [90m   | [39m                               [31m^[39m
+    [90m202| [39m  })[33m;[39m
+    [90m203| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/endToEndAuditedPipeline.test.ts[2m > [22mComprehensive End-to-End Audited Backend Verification[2m > [22mRejection: rejects PDF exceeding configured page count limit
+[31m[1mAssertionError[22m: expected 'Invalid, corrupted, encrypted, or uns…' to contain 'exceeds the maximum allowed limit of …'[39m
+
+Expected: [32m"exceeds the maximum allowed limit of 5 pages"[39m
+Received: [31m"Invalid, corrupted, encrypted, or unsupported PDF document."[39m
+
+[36m [2m❯[22m tests/integration/endToEndAuditedPipeline.test.ts:[2m223:32[22m[39m
+    [90m221| [39m    [35mconst[39m body [33m=[39m [33mJSON[39m[33m.[39m[34mparse[39m(res[33m.[39mbody)[33m;[39m
+    [90m222| [39m    [34mexpect[39m(body[33m.[39merror[33m.[39mcode)[33m.[39m[34mtoBe[39m([32m'FILE_VALIDATION_ERROR'[39m)[33m;[39m
+    [90m223| [39m    expect(body.error.message).toContain('exceeds the maximum allowed …
+    [90m   | [39m                               [31m^[39m
+    [90m224| [39m  })[33m;[39m
+    [90m225| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/security/pdfSecurity.test.ts[2m > [22mPDF Ingestion Security[2m > [22mdetects and rejects password-protected or encrypted PDFs early
+[31m[1mAssertionError[22m: expected function to throw an error, but it didn't[39m
+[36m [2m❯[22m tests/security/pdfSecurity.test.ts:[2m13:7[22m[39m
+    [90m 11| [39m    [34mexpect[39m(() [33m=>[39m
+    [90m 12| [39m      validatePdfBuffer(encryptedPdfBuffer, 'secure_invoice.pdf', 15 *…
+    [90m 13| [39m    )[33m.[39m[34mtoThrowError[39m([33mFileValidationError[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 14| [39m
+    [90m 15| [39m    [34mexpect[39m(() [33m=>[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/security/pdfSecurity.test.ts[2m > [22mPDF Ingestion Security[2m > [22mrejects PDFs exceeding the configured page limit
+[31m[1mAssertionError[22m: expected function to throw an error, but it didn't[39m
+[36m [2m❯[22m tests/security/pdfSecurity.test.ts:[2m32:7[22m[39m
+    [90m 30| [39m    [34mexpect[39m(() [33m=>[39m
+    [90m 31| [39m      validatePdfBuffer(buffer, 'large_statement.pdf', 15 * 1024 * 102…
+    [90m 32| [39m    )[33m.[39m[34mtoThrowError[39m([33mFileValidationError[39m)[33m;[39m
+    [90m   | [39m      [31m^[39m
+    [90m 33| [39m
+    [90m 34| [39m    [34mexpect[39m(() [33m=>[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/security/securityAndValidation.test.ts[2m > [22mSecurity and Validation Safeguards[2m > [22mrejects fake PDF that does not begin with %PDF magic bytes
+[31m[1mAssertionError[22m: expected 'Invalid PDF signature. The PDF header…' to contain 'magic bytes'[39m
+
+Expected: [32m"[7mmagic[27m bytes"[39m
+Received: [31m"[7mInvalid PDF signature. The PDF header was not found within the first 1024[27m bytes[7m.[27m"[39m
+
+[36m [2m❯[22m tests/security/securityAndValidation.test.ts:[2m48:32[22m[39m
+    [90m 46| [39m    [34mexpect[39m(body[33m.[39msuccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 47| [39m    [34mexpect[39m(body[33m.[39merror[33m.[39mcode)[33m.[39m[34mtoBe[39m([32m'UNSUPPORTED_DOCUMENT_TYPE'[39m)[33m;[39m
+    [90m 48| [39m    [34mexpect[39m(body[33m.[39merror[33m.[39mmessage)[33m.[39m[34mtoContain[39m([32m'magic bytes'[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m 49| [39m  })[33m;[39m
+    [90m 50| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/adversarialValidation.test.ts[2m > [22mAdversarial Production Validation Suite[2m > [22mSecond-Pass Verification & Deterministic Authority[2m > [22mproves DETERMINISTIC OVERRIDE: AI verification pass claiming verified CANNOT override arithmetic discrepancy
+[31m[1mFileValidationError[22m: Invalid, corrupted, encrypted, or unsupported PDF document.[39m
+[36m [2m❯[22m inspectPdf src/security/fileValidator.ts:[2m92:11[22m[39m
+    [90m 90| [39m    }
+    [90m 91| [39m
+    [90m 92| [39m    [35mthrow[39m [35mnew[39m [33mFileValidationError[39m(
+    [90m   | [39m          [31m^[39m
+    [90m 93| [39m      [32m'Invalid, corrupted, encrypted, or unsupported PDF document.'[39m
+    [90m 94| [39m    )[33m;[39m
+[90m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m172:22[22m[39m
+[90m [2m❯[22m DocumentProcessingService.processDocument src/services/DocumentProcessingService.ts:[2m92:27[22m[39m
+[90m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m295:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/adversarialValidation.test.ts[2m > [22mAdversarial Production Validation Suite[2m > [22mSecurity Controls: Pre-AI File Validation[2m > [22mrejects malformed PDF with missing magic bytes before invoking any AI calls
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m349:91[22m[39m
+    [90m347| [39m    it('rejects malformed PDF with missing magic bytes before invoking…
+    [90m348| [39m      const malformedBuffer = Buffer.from('CORRUPTED_NON_PDF_BYTES_123…
+    [90m349| [39m      expect(() => validatePdfBuffer(malformedBuffer, 'corrupted.pdf',…
+    [90m   | [39m                                                                                          [31m^[39m
+    [90m350| [39m        [36m/magic bytes/i[39m
+    [90m351| [39m      )[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/adversarialValidation.test.ts[2m > [22mAdversarial Production Validation Suite[2m > [22mSecurity Controls: Pre-AI File Validation[2m > [22mrejects files with invalid extensions
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m356:88[22m[39m
+    [90m354| [39m    [34mit[39m([32m'rejects files with invalid extensions'[39m[33m,[39m () [33m=>[39m {
+    [90m355| [39m      const validPdfBuffer = Buffer.from('%PDF-1.4\n1 0 obj\nendobj\n%…
+    [90m356| [39m      expect(() => validatePdfBuffer(validPdfBuffer, 'invoice.exe', 15…
+    [90m   | [39m                                                                                       [31m^[39m
+    [90m357| [39m        [36m/unsupported file extension/i[39m
+    [90m358| [39m      )[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/adversarialValidation.test.ts[2m > [22mAdversarial Production Validation Suite[2m > [22mSecurity Controls: Pre-AI File Validation[2m > [22mrejects password-protected / encrypted PDFs before AI invocation
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m363:91[22m[39m
+    [90m361| [39m    it('rejects password-protected / encrypted PDFs before AI invocati…
+    [90m362| [39m      const encryptedBuffer = fs.readFileSync(path.join(FIXTURES_DIR, …
+    [90m363| [39m      expect(() => validatePdfBuffer(encryptedBuffer, 'encrypted.pdf',…
+    [90m   | [39m                                                                                          [31m^[39m
+    [90m364| [39m        [36m/password-protected or encrypted/i[39m
+    [90m365| [39m      )[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/fallbackAndCorrection.test.ts[2m > [22mFallback, Retry, Escalation, and AI Correction Loop Execution Paths[2m > [22mScenario 7: Persistent financial mismatch exhausts retries, marks as unverified REVIEW_REQUIRED with safe XLSX
+[31m[1mFileValidationError[22m: Invalid, corrupted, encrypted, or unsupported PDF document.[39m
+[36m [2m❯[22m inspectPdf src/security/fileValidator.ts:[2m92:11[22m[39m
+    [90m 90| [39m    }
+    [90m 91| [39m
+    [90m 92| [39m    [35mthrow[39m [35mnew[39m [33mFileValidationError[39m(
+    [90m   | [39m          [31m^[39m
+    [90m 93| [39m      [32m'Invalid, corrupted, encrypted, or unsupported PDF document.'[39m
+    [90m 94| [39m    )[33m;[39m
+[90m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m172:22[22m[39m
+[90m [2m❯[22m DocumentProcessingService.processDocument src/services/DocumentProcessingService.ts:[2m92:27[22m[39m
+[90m [2m❯[22m tests/unit/fallbackAndCorrection.test.ts:[2m145:20[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 5 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mUnsupportedDocumentError[22m: Invalid PDF signature. The PDF header was not found within the first 1024 bytes.[39m
+[36m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m166:11[22m[39m
+    [90m164| [39m
+    [90m165| [39m  [35mif[39m (headerIndex [33m<[39m [34m0[39m [33m||[39m headerIndex [33m>[39m [33mPDF_HEADER_MAX_OFFSET[39m) {
+    [90m166| [39m    [35mthrow[39m [35mnew[39m [33mUnsupportedDocumentError[39m(
+    [90m   | [39m          [31m^[39m
+    [90m167| [39m      'Invalid PDF signature. The PDF header was not found within the …
+    [90m168| [39m    )[33m;[39m
+[90m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m349:20[22m[39m
+[90m [2m❯[22m Proxy.assertThrows ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m2767:5[22m[39m
+[90m [2m❯[22m Proxy.methodWrapper ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m1686:25[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> ../../OCR%20backend/OCR-Backend/node_modules/@vitest/expect/dist/index.js:[2m1088:12[22m[39m
+[90m [2m❯[22m Proxy.overwritingMethodWrapper ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m1735:33[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> ../../OCR%20backend/OCR-Backend/node_modules/@vitest/expect/dist/index.js:[2m1420:16[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> ../../OCR%20backend/OCR-Backend/node_modules/@vitest/expect/dist/index.js:[2m1029:14[22m[39m
+[90m [2m❯[22m Proxy.methodWrapper ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m1686:25[22m[39m
+[90m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m349:91[22m[39m
+[90m [2m❯[22m ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m155:11[22m[39m
+[90m [2m❯[22m ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m752:26[22m[39m
+[90m [2m❯[22m ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m1897:20[22m[39m
+[90m [2m❯[22m runWithTimeout ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m1863:10[22m[39m
+[90m [2m❯[22m runTest ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m1574:12[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ isOperational: true, details: undefined, statusCode: 415, code: 'UNSUPPORTED_DOCUMENT_TYPE' }[39m
+[31mThis error originated in "[1mtests/unit/adversarialValidation.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mUnsupportedDocumentError[22m: Unsupported file extension '.exe'. Only .pdf is allowed.[39m
+[36m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m149:11[22m[39m
+    [90m147| [39m
+    [90m148| [39m  [35mif[39m (ext [33m!==[39m [32m'.pdf'[39m) {
+    [90m149| [39m    [35mthrow[39m [35mnew[39m [33mUnsupportedDocumentError[39m(
+    [90m   | [39m          [31m^[39m
+    [90m150| [39m      [32m`Unsupported file extension '[39m[36m${[39mext[36m}[39m[32m'. Only .pdf is allowed.`[39m
+    [90m151| [39m    )[33m;[39m
+[90m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m356:20[22m[39m
+[90m [2m❯[22m Proxy.assertThrows ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m2767:5[22m[39m
+[90m [2m❯[22m Proxy.methodWrapper ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m1686:25[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> ../../OCR%20backend/OCR-Backend/node_modules/@vitest/expect/dist/index.js:[2m1088:12[22m[39m
+[90m [2m❯[22m Proxy.overwritingMethodWrapper ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m1735:33[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> ../../OCR%20backend/OCR-Backend/node_modules/@vitest/expect/dist/index.js:[2m1420:16[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> ../../OCR%20backend/OCR-Backend/node_modules/@vitest/expect/dist/index.js:[2m1029:14[22m[39m
+[90m [2m❯[22m Proxy.methodWrapper ../../OCR%20backend/OCR-Backend/node_modules/chai/index.js:[2m1686:25[22m[39m
+[90m [2m❯[22m tests/unit/adversarialValidation.test.ts:[2m356:88[22m[39m
+[90m [2m❯[22m ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m155:11[22m[39m
+[90m [2m❯[22m ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m752:26[22m[39m
+[90m [2m❯[22m ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m1897:20[22m[39m
+[90m [2m❯[22m runWithTimeout ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m1863:10[22m[39m
+[90m [2m❯[22m runTest ../../OCR%20backend/OCR-Backend/node_modules/@vitest/runner/dist/chunk-hooks.js:[2m1574:12[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ isOperational: true, details: undefined, statusCode: 415, code: 'UNSUPPORTED_DOCUMENT_TYPE' }[39m
+[31mThis error originated in "[1mtests/unit/adversarialValidation.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mFileValidationError[22m: The uploaded PDF is password-protected or encrypted. Please provide an unencrypted document.[39m
+[36m [2m❯[22m inspectPdf src/security/fileValidator.ts:[2m83:13[22m[39m
+    [90m 81| [39m
+    [90m 82| [39m    [35mif[39m (pdfError[33m?.[39mname [33m===[39m [32m'PasswordException'[39m) {
+    [90m 83| [39m      [35mthrow[39m [35mnew[39m [33mFileValidationError[39m(
+    [90m   | [39m            [31m^[39m
+    [90m 84| [39m        'The uploaded PDF is password-protected or encrypted. Please p…
+    [90m 85| [39m      )[33m;[39m
+[90m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m172:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ isOperational: true, details: undefined, statusCode: 400, code: 'FILE_VALIDATION_ERROR' }[39m
+[31mThis error originated in "[1mtests/unit/adversarialValidation.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mFileValidationError[22m: Invalid, corrupted, encrypted, or unsupported PDF document.[39m
+[36m [2m❯[22m inspectPdf src/security/fileValidator.ts:[2m92:11[22m[39m
+    [90m 90| [39m    }
+    [90m 91| [39m
+    [90m 92| [39m    [35mthrow[39m [35mnew[39m [33mFileValidationError[39m(
+    [90m   | [39m          [31m^[39m
+    [90m 93| [39m      [32m'Invalid, corrupted, encrypted, or unsupported PDF document.'[39m
+    [90m 94| [39m    )[33m;[39m
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m104:5[22m[39m
+[90m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m172:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ isOperational: true, details: undefined, statusCode: 400, code: 'FILE_VALIDATION_ERROR' }[39m
+[31mThis error originated in "[1mtests/security/pdfSecurity.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mFileValidationError[22m: Invalid, corrupted, encrypted, or unsupported PDF document.[39m
+[36m [2m❯[22m inspectPdf src/security/fileValidator.ts:[2m92:11[22m[39m
+    [90m 90| [39m    }
+    [90m 91| [39m
+    [90m 92| [39m    [35mthrow[39m [35mnew[39m [33mFileValidationError[39m(
+    [90m   | [39m          [31m^[39m
+    [90m 93| [39m      [32m'Invalid, corrupted, encrypted, or unsupported PDF document.'[39m
+    [90m 94| [39m    )[33m;[39m
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m104:5[22m[39m
+[90m [2m❯[22m validatePdfBuffer src/security/fileValidator.ts:[2m172:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ isOperational: true, details: undefined, statusCode: 400, code: 'FILE_VALIDATION_ERROR' }[39m
+[31mThis error originated in "[1mtests/security/pdfSecurity.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m22 passed[39m[22m[90m (27)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m242 passed[39m[22m[90m (253)[39m
+[2m     Errors [22m [1m[31m5 errors[39m[22m
+[2m   Start at [22m 03:06:39
+[2m   Duration [22m 23.92s[2m (transform 1.39s, setup 0ms, collect 40.27s, tests 15.56s, environment 8ms, prepare 5.60s)[22m
+

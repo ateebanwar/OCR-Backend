@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { ExtractionService } from '../../src/services/ExtractionService';
 import { DocumentProcessingService } from '../../src/services/DocumentProcessingService';
 import { MockAIProvider } from '../mocks/MockAIProvider';
@@ -16,9 +18,7 @@ describe('Fallback, Retry, Escalation, and AI Correction Loop Execution Paths', 
     MAX_ESCALATION_LEVELS: '2',
   });
 
-  const samplePdf = Buffer.from(
-    '%PDF-1.4\n1 0 obj\n<< /Type /Page >>\nendobj\nstream\nBT /F1 12 Tf (Invoice 101) Tj ET\nendstream\n%%EOF'
-  );
+  const samplePdf = fs.readFileSync(path.resolve('tests/fixtures/documents/test01_simple_invoice.pdf'));
 
   beforeEach(() => {
     mockProvider = new MockAIProvider();
