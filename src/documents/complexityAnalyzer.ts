@@ -53,41 +53,42 @@ export function extractContentStreams(
   let match: RegExpExecArray | null;
   let totalDecompressed = 0;
 
-  while ((match = streamRegex.exec(raw)) !== null && streams.length < maxStreams) {
+  while (
+    (match = streamRegex.exec(raw)) !== null &&
+    streams.length < maxStreams &&
+    totalDecompressed < maxDecompressedBytes
+  ) {
     const streamContent = match[1];
     if (!streamContent) continue;
 
-    // Check if stream is Flate compressed
+    const remainingBytes = maxDecompressedBytes - totalDecompressed;
     const streamBuffer = Buffer.from(streamContent, 'latin1');
+
     let decompressed: string | null = null;
 
     try {
-      const inflated = zlib.inflateSync(streamBuffer);
+      // Enforce the output limit DURING decompression.
+      const inflated = zlib.inflateSync(streamBuffer, {
+        maxOutputLength: remainingBytes,
+      });
+
       decompressed = inflated.toString('latin1');
     } catch {
-      // If inflate fails, attempt unzipSync or fallback to raw content if plain text
-      try {
-        const unzipped = zlib.unzipSync(streamBuffer);
-        decompressed = unzipped.toString('latin1');
-      } catch {
-        if (/[\x20-\x7E]{10,}/.test(streamContent)) {
-          decompressed = streamContent;
-        }
+      // Do not attempt unbounded decompression fallback.
+      // Retain only a bounded amount of printable raw content.
+      if (/[\x20-\x7E]{10,}/.test(streamContent)) {
+        decompressed = streamContent.slice(0, remainingBytes);
       }
     }
 
     if (decompressed) {
       streams.push(decompressed);
       totalDecompressed += decompressed.length;
-      if (totalDecompressed >= maxDecompressedBytes) {
-        break;
-      }
     }
   }
 
   return streams;
 }
-
 const TABLE_HEADER_KEYWORDS = [
   'description',
   'quantity',
