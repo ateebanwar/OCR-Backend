@@ -33,8 +33,8 @@ export function estimatePageCount(buffer: Buffer): number {
     .filter((count) => Number.isSafeInteger(count) && count > 0);
 
   if (counts.length > 0) {
-    return Math.max(...counts);
-  }
+  return counts.reduce((max, count) => Math.max(max, count), 0);
+}
 
   return 0;
 }
@@ -45,8 +45,9 @@ export function detectImageDensity(buffer: Buffer): number {
 }
 
 /**
- * Extracts and decompresses text/content streams from the PDF buffer safely.
- * Bounded by maxStreams and maxDecompressedBytes to guarantee resilience against DoS.
+ * Extracts and decompresses PDF content streams.
+ * Limits the number of streams and total decompressed output
+ * to reduce memory and resource-exhaustion risks.
  */
 export function extractContentStreams(
   buffer: Buffer,
@@ -170,6 +171,17 @@ export function analyzeDocumentComplexity(
   buffer: Buffer,
   previousFailureCount = 0
 ): ComplexityAnalysisResult {
+if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
+  throw new TypeError('Invalid or empty PDF buffer.');
+}
+
+if (
+  !Number.isSafeInteger(previousFailureCount) ||
+  previousFailureCount < 0
+) {
+  throw new RangeError('Invalid previous failure count.');
+}
+  
   const hierarchy = getModelHierarchy();
   const pageCount = estimatePageCount(buffer);
   const imageCount = detectImageDensity(buffer);
@@ -278,15 +290,15 @@ export function analyzeDocumentComplexity(
   // Composite raw score
   let totalScore = tabularScore + financialScore + layoutDensityScore + riskUncertaintyScore;
 
-  // Confidence & Safety-first routing
+   // Confidence & Safety-first routing
   // If text streams were empty or contradictory (e.g. large file with no text streams detected)
-let confidence = 0.90;
+  let confidence = 0.90;
 
-if (pageCount === 0 || (streamCount === 0 && byteSize > 100000)) {
-  confidence = 0.50;
-} else if (isScannedHeavy) {
-  confidence = 0.60;
-}
+  if (pageCount === 0 || (streamCount === 0 && byteSize > 100000)) {
+    confidence = 0.50;
+  } else if (isScannedHeavy) {
+    confidence = 0.60;
+  }
 
   // Safety-first boost: When confidence is low, uncertainty boost increases model capability
   if (confidence < 0.65) {
