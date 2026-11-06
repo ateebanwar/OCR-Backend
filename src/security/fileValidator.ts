@@ -1,10 +1,11 @@
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+
 import {
   FileValidationError,
   UnsupportedDocumentError,
 } from '../errors/AppError';
-import { estimatePageCount } from '../documents/complexityAnalyzer';
 
 export interface ValidatedFile {
   documentId: string;
@@ -14,6 +15,11 @@ export interface ValidatedFile {
   byteSize: number;
   mimeType: string;
   pageCount: number;
+}
+
+interface PdfInspection {
+  pageCount: number;
+  isEncrypted: boolean;
 }
 
 const PDF_HEADER = Buffer.from('%PDF-');
@@ -40,30 +46,90 @@ export function sanitizeFilename(filename: string): string {
   return sanitized;
 }
 
-export function isPdfEncrypted(buffer: Buffer): boolean {
-  if (!Buffer.isBuffer(buffer)) {
-    throw new TypeError('Invalid PDF buffer.');
+async function inspectPdf(buffer: Buffer): Promise<PdfInspection> {
+  if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
+    throw new FileValidationError('Uploaded PDF is empty or invalid.');
   }
 
-  const content = buffer.toString('latin1');
+  let loadingTask:
+    | ReturnType<typeof getDocument>
+    | undefined;
 
-  return /\/Encrypt\s*(?:\d+\s+\d+\s+R|<<)/.test(content);
+  try {
+    loadingTask = getDocument({
+      data: new Uint8Array(buffer),
+      stopAtErrors: true,
+      isEvalSupported: false,
+      useSystemFonts: false,
+      disableFontFace: true,
+    });
+
+    const pdf = await loadingTask.promise;
+
+    try {
+      const permissions = await pdf.getPermissions();
+
+      return {
+        pageCount: pdf.numPages,
+        isEncrypted: permissions !== null,
+      };
+    } finally {
+      await pdf.destroy();
+    }
+  } catch (error: unknown) {
+    const pdfError = error as Error;
+
+    if (pdfError?.name === 'PasswordException') {
+      throw new FileValidationError(
+        'The uploaded PDF is password-protected or encrypted. Please provide an unencrypted document.'
+      );
+    }
+
+    if (error instanceof FileValidationError) {
+      throw error;
+    }
+
+    throw new FileValidationError(
+      'Invalid, corrupted, encrypted, or unsupported PDF document.'
+    );
+  } finally {
+    if (loadingTask) {
+      await loadingTask.destroy().catch(() => undefined);
+    }
+  }
 }
 
-export function validatePdfBuffer(
+export async function isPdfEncrypted(
+  buffer: Buffer
+): Promise<boolean> {
+  const inspection = await inspectPdf(buffer);
+  return inspection.isEncrypted;
+}
+
+export async function validatePdfBuffer(
   buffer: Buffer,
   originalFilename: string,
   maxSizeBytes: number,
   maxPages = 50
-): ValidatedFile {
-  // 1. Validate uploaded buffer
+): Promise<ValidatedFile> {
+  // 1. Validate buffer
   if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
-    throw new FileValidationError('Uploaded file is empty or invalid.');
+    throw new FileValidationError(
+      'Uploaded file is empty or invalid.'
+    );
   }
 
-  // 2. Validate configured size limit
+  // 2. Validate configured limits
   if (!Number.isSafeInteger(maxSizeBytes) || maxSizeBytes < 1) {
-    throw new RangeError('Invalid maximum file size configuration.');
+    throw new RangeError(
+      'Invalid maximum file size configuration.'
+    );
+  }
+
+  if (!Number.isSafeInteger(maxPages) || maxPages < 1) {
+    throw new RangeError(
+      'Invalid maximum PDF page configuration.'
+    );
   }
 
   if (buffer.length > maxSizeBytes) {
@@ -75,53 +141,48 @@ export function validatePdfBuffer(
     );
   }
 
-  // 3. Validate filename
-  if (
-    typeof originalFilename !== 'string' ||
-    originalFilename.trim().length === 0
-  ) {
-    throw new FileValidationError('Invalid filename.');
-  }
-
+  // 3. Validate filename and extension
   const sanitized = sanitizeFilename(originalFilename);
   const ext = path.extname(sanitized).toLowerCase();
 
-  // 4. Validate PDF extension
   if (ext !== '.pdf') {
     throw new UnsupportedDocumentError(
       `Unsupported file extension '${ext}'. Only .pdf is allowed.`
     );
   }
 
-  // 5. Verify PDF header within the first 1024 bytes
+  // 4. Verify PDF signature within first 1024 bytes
   const headerIndex = buffer
-    .subarray(0, Math.min(buffer.length, PDF_HEADER_MAX_OFFSET + PDF_HEADER.length))
+    .subarray(
+      0,
+      Math.min(
+        buffer.length,
+        PDF_HEADER_MAX_OFFSET + PDF_HEADER.length
+      )
+    )
     .indexOf(PDF_HEADER);
 
   if (headerIndex < 0 || headerIndex > PDF_HEADER_MAX_OFFSET) {
     throw new UnsupportedDocumentError(
-      'Invalid file format. PDF signature (%PDF-) was not found in the first 1024 bytes.'
+      'Invalid PDF signature. The PDF header was not found within the first 1024 bytes.'
     );
   }
 
-  // 6. Reject encrypted PDFs
-  if (isPdfEncrypted(buffer)) {
+  // 5. Parse actual PDF structure
+  const inspection = await inspectPdf(buffer);
+
+  if (inspection.isEncrypted) {
     throw new FileValidationError(
-      'The uploaded PDF appears to be password-protected or encrypted. Please provide an unencrypted document.'
+      'The uploaded PDF is encrypted. Please provide an unencrypted document.'
     );
   }
 
-  // 7. Validate maximum page configuration
-  if (!Number.isSafeInteger(maxPages) || maxPages < 1) {
-    throw new RangeError('Invalid maximum PDF page configuration.');
-  }
+  // 6. Enforce actual page count
+  const pageCount = inspection.pageCount;
 
-  // 8. Estimate and enforce page count
-  const pageCount = estimatePageCount(buffer);
-
-  if (pageCount === 0) {
+  if (!Number.isSafeInteger(pageCount) || pageCount < 1) {
     throw new FileValidationError(
-      'Unable to determine the PDF page count. The document cannot be safely validated.'
+      'Unable to determine a valid PDF page count.'
     );
   }
 
@@ -131,7 +192,7 @@ export function validatePdfBuffer(
     );
   }
 
-  // 9. Generate a unique document identifier
+  // 7. Generate document identifier
   const documentId = crypto.randomUUID();
 
   return {
