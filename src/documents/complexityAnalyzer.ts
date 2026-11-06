@@ -15,22 +15,28 @@ import { getModelHierarchy } from '../config/models';
 
 export function estimatePageCount(buffer: Buffer): number {
   const content = buffer.toString('latin1');
+
   const matches = content.match(/\/Type\s*\/Page\b/g);
+
   if (matches && matches.length > 0) {
     return matches.length;
   }
 
-  const countMatch = content.match(/\/Count\s+(\d+)/);
-  if (countMatch && countMatch[1]) {
-    const parsed = parseInt(countMatch[1], 10);
-    if (!isNaN(parsed) && parsed > 0) {
-      return parsed;
-    }
+  const countMatches = [
+    ...content.matchAll(/\/Count\s+(\d+)\b/g),
+  ];
+
+  const counts = countMatches
+    .map((match) => Number(match[1]))
+    .filter((count) => Number.isSafeInteger(count) && count > 0);
+
+  if (counts.length > 0) {
+    return Math.max(...counts);
   }
 
-  return 1;
+  // Unknown page count: return 0 instead of falsely claiming 1 page.
+  return 0;
 }
-
 export function detectImageDensity(buffer: Buffer): number {
   const content = buffer.toString('latin1');
   const imageMatches = content.match(/\/Subtype\s*\/Image\b/g);
