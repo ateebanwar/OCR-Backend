@@ -34,6 +34,7 @@
     "@google/generative-ai": "^0.24.1",
     "@vercel/blob": "^2.8.0",
     "exceljs": "^4.4.0",
+    "pdfjs-dist": "5.4.394",
     "fastify": "^5.2.1",
     "zod": "^3.24.2"
   },
