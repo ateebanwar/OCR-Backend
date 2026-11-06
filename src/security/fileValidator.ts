@@ -31,12 +31,15 @@ export function sanitizeFilename(filename: string): string {
     throw new FileValidationError('Invalid filename.');
   }
 
-  const basename = path.basename(filename.trim());
+  // Handle Windows and Unix path separators.
+  const basename = filename.trim().split(/[\\/]/).pop() ?? '';
 
   const sanitized = basename
     .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
     .replace(/[\x00-\x1F\x7F]/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .replace(/\.{2,}/g, '.')
+    .replace(/^\.+/, '')
     .slice(0, MAX_FILENAME_LENGTH);
 
   if (!sanitized || sanitized === '.' || sanitized === '..') {
@@ -137,7 +140,7 @@ export async function validatePdfBuffer(
     const actualMb = (buffer.length / (1024 * 1024)).toFixed(1);
 
     throw new FileValidationError(
-      `File size (${actualMb}MB) exceeds limit of ${maxMb}MB.`
+      'File size (' + actualMb + 'MB) exceeds limit of ' + maxMb + 'MB.'
     );
   }
 
@@ -147,7 +150,7 @@ export async function validatePdfBuffer(
 
   if (ext !== '.pdf') {
     throw new UnsupportedDocumentError(
-      `Unsupported file extension '${ext}'. Only .pdf is allowed.`
+      "Unsupported file extension '" + ext + "'. Only .pdf is allowed."
     );
   }
 
@@ -188,7 +191,7 @@ export async function validatePdfBuffer(
 
   if (pageCount > maxPages) {
     throw new FileValidationError(
-      `Document page count (${pageCount}) exceeds the maximum allowed limit of ${maxPages} pages.`
+      'Document page count (' + pageCount + ') exceeds the maximum allowed limit of ' + maxPages + ' pages.'
     );
   }
 
@@ -198,7 +201,7 @@ export async function validatePdfBuffer(
   return {
     documentId,
     originalFilename,
-    sanitizedFilename: `${documentId}_${sanitized}`,
+    sanitizedFilename: documentId + '_' + sanitized,
     buffer,
     byteSize: buffer.length,
     mimeType: 'application/pdf',
