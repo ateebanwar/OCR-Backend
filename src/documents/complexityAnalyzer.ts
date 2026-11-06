@@ -280,12 +280,13 @@ export function analyzeDocumentComplexity(
 
   // Confidence & Safety-first routing
   // If text streams were empty or contradictory (e.g. large file with no text streams detected)
-  let confidence = 0.90;
-  if (pageCount === 0 || (streamCount === 0 && byteSize > 100000)) {
-    confidence = 0.50; // High uncertainty
-  } else if (isScannedHeavy) {
-    confidence = 0.60;
-  }
+let confidence = 0.90;
+
+if (pageCount === 0 || (streamCount === 0 && byteSize > 100000)) {
+  confidence = 0.50;
+} else if (isScannedHeavy) {
+  confidence = 0.60;
+}
 
   // Safety-first boost: When confidence is low, uncertainty boost increases model capability
   if (confidence < 0.65) {
