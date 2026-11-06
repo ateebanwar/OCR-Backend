@@ -53,6 +53,19 @@ export function extractContentStreams(
   maxStreams = 30,
   maxDecompressedBytes = 1024 * 1024
 ): string[] {
+  if (!Buffer.isBuffer(buffer)) {
+    throw new TypeError('Invalid PDF buffer.');
+  }
+
+  if (
+    !Number.isSafeInteger(maxStreams) ||
+    maxStreams < 1 ||
+    !Number.isSafeInteger(maxDecompressedBytes) ||
+    maxDecompressedBytes < 1
+  ) {
+    throw new RangeError('Invalid content stream extraction limits.');
+  }
+  
   const raw = buffer.toString('latin1');
   const streams: string[] = [];
   const streamRegex = /stream[\r\n]+([\s\S]*?)[\r\n]+endstream/g;
